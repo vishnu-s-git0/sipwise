@@ -400,6 +400,17 @@
     }
 
     function openAddBagModal(prefill = {}) {
+        // Enforce user authentication to add coffee bags to stash
+        const user = window.SipwiseAuth ? window.SipwiseAuth.getCurrentUser() : null;
+        if (!user) {
+            if (window.SipwiseAuth) {
+                window.SipwiseAuth.openAuthModal("signin", () => {
+                    openAddBagModal(prefill);
+                });
+            }
+            return;
+        }
+
         ensureAddBagModal();
         const modal = document.getElementById("sipwiseAddBagModal");
 

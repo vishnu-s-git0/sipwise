@@ -482,6 +482,18 @@
         // Form submit
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
+
+            const user = window.SipwiseAuth ? window.SipwiseAuth.getCurrentUser() : null;
+            if (!user) {
+                closeLogCupModal();
+                if (window.SipwiseAuth) {
+                    window.SipwiseAuth.openAuthModal("signin", () => {
+                        openLogCupModal();
+                    });
+                }
+                return;
+            }
+
             const beanName = document.getElementById("jrnBeanName").value;
             const roasterName = document.getElementById("jrnRoasterName").value;
             const gearSelect = document.getElementById("jrnGearSelect");
@@ -556,6 +568,17 @@
     }
 
     async function openLogCupModal(prefill = {}) {
+        // Enforce user authentication to log brews
+        const user = window.SipwiseAuth ? window.SipwiseAuth.getCurrentUser() : null;
+        if (!user) {
+            if (window.SipwiseAuth) {
+                window.SipwiseAuth.openAuthModal("signin", () => {
+                    openLogCupModal(prefill);
+                });
+            }
+            return;
+        }
+
         ensureLogCupModal();
         const modal = document.getElementById("sipwiseLogCupModal");
 
