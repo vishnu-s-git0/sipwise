@@ -239,11 +239,53 @@
         scale: ["Timemore", "Acaia", "Hario", "Weightman", "Fellow"]
     };
 
+    const EQUIPMENT_PRESETS = {
+        brewer: [
+            { name: "Hario V60 (Plastic 02)", brand: "Hario", clicks: "14 clicks (Medium-Fine)" },
+            { name: "AeroPress Original", brand: "AeroPress", clicks: "11 clicks (Medium-Fine)" },
+            { name: "South Indian Brass Filter", brand: "Traditional Brass", clicks: "8 clicks (Fine)" },
+            { name: "Bialetti Moka Express", brand: "Bialetti", clicks: "9 clicks (Fine-Medium)" },
+            { name: "Kalita Wave 185", brand: "Kalita", clicks: "15 clicks (Medium)" },
+            { name: "Hario V60 Switch", brand: "Hario", clicks: "14 clicks" },
+            { name: "Origami Dripper", brand: "Origami", clicks: "14 clicks" },
+            { name: "Bodum French Press", brand: "Bodum", clicks: "22 clicks (Coarse)" },
+            { name: "Flair 58 Espresso", brand: "Flair", clicks: "5 clicks (Espresso)" },
+            { name: "Chemex 6-Cup", brand: "Chemex", clicks: "18 clicks (Medium-Coarse)" }
+        ],
+        grinder: [
+            { name: "Timemore Chestnut C2", brand: "Timemore", clicks: "14 clicks (V60) / 11 clicks (AeroPress)" },
+            { name: "Timemore Chestnut C3", brand: "Timemore", clicks: "13 clicks (V60) / 10 clicks (AeroPress)" },
+            { name: "Comandante C40 MK4", brand: "Comandante", clicks: "24 clicks (Pour-Over)" },
+            { name: "1Zpresso JX-Pro", brand: "1Zpresso", clicks: "3.2 rotations (Pour-Over)" },
+            { name: "1Zpresso Q2", brand: "1Zpresso", clicks: "18 clicks (V60)" },
+            { name: "Baratza Encore", brand: "Baratza", clicks: "Setting 14 (V60) / 11 (AeroPress)" },
+            { name: "Baratza Encore ESP", brand: "Baratza", clicks: "Setting 16 (Pour-over)" },
+            { name: "Fellow Ode Gen 2", brand: "Fellow", clicks: "Setting 4 (Pour-over)" },
+            { name: "Fellow Opus", brand: "Fellow", clicks: "Setting 5.5" },
+            { name: "Kingrinder K6", brand: "Kingrinder", clicks: "85 clicks" },
+            { name: "Eureka Mignon Specialita", brand: "Eureka", clicks: "Setting 1.5 (Espresso)" }
+        ],
+        kettle: [
+            { name: "Fellow Stagg EKG Electric", brand: "Fellow", clicks: "92°C Pour-Over" },
+            { name: "Hario V60 'Buono' Kettle", brand: "Hario", clicks: "Gooseneck Flow" },
+            { name: "Brewista Artisan Variable Kettle", brand: "Brewista", clicks: "93°C Setting" },
+            { name: "Timemore Smart Fish Kettle", brand: "Timemore", clicks: "91°C Pour-Over" },
+            { name: "Bonavita Variable Temp Kettle", brand: "Bonavita", clicks: "92°C Setting" }
+        ],
+        scale: [
+            { name: "Timemore Black Mirror Basic 2", brand: "Timemore", clicks: "0.1g Timer & Flow Rate" },
+            { name: "Timemore Black Mirror Nano", brand: "Timemore", clicks: "0.1g Compact Espresso Scale" },
+            { name: "Hario V60 Drip Scale", brand: "Hario", clicks: "0.1g Dual Display" },
+            { name: "Acaia Pearl", brand: "Acaia", clicks: "Precision Brewing Scale" },
+            { name: "Fellow Tally Pro Precision Scale", brand: "Fellow", clicks: "Brew Assist Scale" }
+        ]
+    };
+
     function updateBrandChips(type) {
         const row = document.getElementById("brandSuggestionsRow");
         if (!row) return;
         const brands = BRAND_PRESETS[type] || BRAND_PRESETS.brewer;
-        row.innerHTML = `<span style="font-size:10.5px; color:var(--muted); font-weight:600; text-transform:uppercase;">Popular:</span> ` +
+        row.innerHTML = `<span style="font-size:10px; color:var(--muted); font-weight:600; text-transform:uppercase;">Popular:</span> ` +
             brands.map(b => `<button type="button" class="brand-chip" data-brand="${b}">${b}</button>`).join("");
 
         row.querySelectorAll(".brand-chip").forEach(chip => {
@@ -255,6 +297,34 @@
                 }
             });
         });
+    }
+
+    function updateEquipmentChips(type) {
+        const row = document.getElementById("equipmentSuggestionsRow");
+        const datalist = document.getElementById("popularEquipmentDatalist");
+        const presets = EQUIPMENT_PRESETS[type] || EQUIPMENT_PRESETS.brewer;
+
+        if (datalist) {
+            datalist.innerHTML = presets.map(p => `<option value="${p.name}">`).join("");
+        }
+
+        if (row) {
+            row.innerHTML = `<span style="font-size:10px; color:var(--muted); font-weight:600; text-transform:uppercase;">Popular Models:</span> ` +
+                presets.slice(0, 6).map(p => `<button type="button" class="brand-chip" data-name="${p.name}" data-brand="${p.brand}" data-clicks="${p.clicks}">${p.name.split(" (")[0]}</button>`).join("");
+
+            row.querySelectorAll(".brand-chip").forEach(chip => {
+                chip.addEventListener("click", () => {
+                    const nameInput = document.getElementById("eqName");
+                    const brandInput = document.getElementById("eqBrand");
+                    const clicksInput = document.getElementById("eqClicks");
+
+                    if (nameInput) nameInput.value = chip.dataset.name;
+                    if (brandInput && (!brandInput.value || chip.dataset.brand)) brandInput.value = chip.dataset.brand;
+                    if (clicksInput && (!clicksInput.value || chip.dataset.clicks)) clicksInput.value = chip.dataset.clicks;
+                    if (nameInput) nameInput.focus();
+                });
+            });
+        }
     }
 
     /**
@@ -293,7 +363,11 @@
                             </div>
                             <div class="auth-field-group" style="flex: 2;">
                                 <label for="eqName">Equipment Name</label>
-                                <input type="text" id="eqName" placeholder="e.g. Comandante C40 MK4 or Kalita Wave" required>
+                                <input type="text" id="eqName" list="popularEquipmentDatalist" placeholder="e.g. Hario V60, Timemore C2, AeroPress" autocomplete="off" required>
+                                <datalist id="popularEquipmentDatalist"></datalist>
+                                <div class="brand-suggestions-row" id="equipmentSuggestionsRow">
+                                    <!-- Dynamic equipment model suggestion chips -->
+                                </div>
                             </div>
                         </div>
 
@@ -349,11 +423,30 @@
         });
 
         const typeSelect = document.getElementById("eqType");
+        const nameInput = document.getElementById("eqName");
+
         if (typeSelect) {
             typeSelect.addEventListener("change", () => {
                 updateBrandChips(typeSelect.value);
+                updateEquipmentChips(typeSelect.value);
             });
             updateBrandChips(typeSelect.value);
+            updateEquipmentChips(typeSelect.value);
+        }
+
+        if (nameInput) {
+            nameInput.addEventListener("input", () => {
+                const val = nameInput.value.trim().toLowerCase();
+                const type = typeSelect ? typeSelect.value : "brewer";
+                const presets = EQUIPMENT_PRESETS[type] || [];
+                const found = presets.find(p => p.name.toLowerCase() === val || p.name.toLowerCase().startsWith(val));
+                if (found) {
+                    const brandInput = document.getElementById("eqBrand");
+                    const clicksInput = document.getElementById("eqClicks");
+                    if (brandInput && !brandInput.value) brandInput.value = found.brand;
+                    if (clicksInput && !clicksInput.value) clicksInput.value = found.clicks;
+                }
+            });
         }
 
         form.addEventListener("submit", async (e) => {
@@ -380,7 +473,10 @@
         ensureEquipmentModal();
         renderEquipmentLocker();
         const typeSelect = document.getElementById("eqType");
-        if (typeSelect) updateBrandChips(typeSelect.value);
+        if (typeSelect) {
+            updateBrandChips(typeSelect.value);
+            updateEquipmentChips(typeSelect.value);
+        }
         const modal = document.getElementById("sipwiseEquipmentModal");
         if (modal) {
             modal.classList.add("is-visible");
