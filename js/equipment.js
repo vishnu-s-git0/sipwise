@@ -211,9 +211,17 @@
             scale: "⚖️"
         };
 
+        const noteLabels = {
+            grinder: "⚙️ Clicks:",
+            brewer: "☕ Grind & Recipe Notes:",
+            kettle: "🫖 Temp & Flow:",
+            scale: "⚖️ Mode:"
+        };
+
         listEl.innerHTML = items
             .map((item) => {
                 const icon = icons[item.equipmentType] || "🔧";
+                const prefix = noteLabels[item.equipmentType] || "🎯 Notes:";
                 return `
                 <div class="equipment-card" data-id="${item.id}">
                     <div class="equipment-card-icon">${icon}</div>
@@ -223,7 +231,7 @@
                             <span class="equipment-type-badge">${escapeHTML(item.equipmentType)}</span>
                         </div>
                         ${item.brand ? `<div class="equipment-brand">${escapeHTML(item.brand)}</div>` : ""}
-                        ${item.defaultClicks ? `<div class="equipment-clicks">🎯 <em>${escapeHTML(item.defaultClicks)}</em></div>` : ""}
+                        ${item.defaultClicks ? `<div class="equipment-clicks"><em>${prefix} ${escapeHTML(item.defaultClicks)}</em></div>` : ""}
                     </div>
                     <button type="button" class="equipment-del-btn" onclick="window.SipwiseEquipment.deleteEquipment('${item.id}')" title="Remove equipment">✕</button>
                 </div>
@@ -280,6 +288,39 @@
             { name: "Fellow Tally Pro Precision Scale", brand: "Fellow", clicks: "Brew Assist Scale" }
         ]
     };
+
+    const TYPE_NOTE_CONFIG = {
+        grinder: {
+            label: "Grinder Clicks / Calibration",
+            placeholder: "e.g. 14 clicks (V60) / 11 clicks (AeroPress)",
+            hint: "Clicks counted from zero on your manual or electric grinder."
+        },
+        brewer: {
+            label: "Target Grind Size & Recipe Notes",
+            placeholder: "e.g. Medium-Fine grind, 92°C, 3-pour technique",
+            hint: "Recommended grind consistency and water temperature for this brewer."
+        },
+        kettle: {
+            label: "Default Temperature & Pour Flow",
+            placeholder: "e.g. 92°C Pour-Over, steady center stream",
+            hint: "Target water temperature and gooseneck flow rate."
+        },
+        scale: {
+            label: "Timer Mode & Scale Notes",
+            placeholder: "e.g. Auto-tare & auto-timer on first drop",
+            hint: "Display resolution and automatic timer mode."
+        }
+    };
+
+    function updateNoteFieldConfig(type) {
+        const label = document.getElementById("eqClicksLabel");
+        const input = document.getElementById("eqClicks");
+        const hint = document.getElementById("eqClicksHint");
+        const cfg = TYPE_NOTE_CONFIG[type] || TYPE_NOTE_CONFIG.brewer;
+        if (label) label.textContent = cfg.label;
+        if (input) input.placeholder = cfg.placeholder;
+        if (hint) hint.textContent = cfg.hint;
+    }
 
     function updateBrandChips(type) {
         const row = document.getElementById("brandSuggestionsRow");
@@ -399,8 +440,9 @@
                                 </div>
                             </div>
                             <div class="auth-field-group" style="flex: 1.2;">
-                                <label for="eqClicks">Dial-in Clicks / Notes</label>
-                                <input type="text" id="eqClicks" placeholder="e.g. 14 clicks (V60) / 10 clicks (AeroPress)">
+                                <label for="eqClicks" id="eqClicksLabel">Target Grind Size &amp; Recipe Notes</label>
+                                <input type="text" id="eqClicks" placeholder="e.g. Medium-Fine grind, 92°C, 3-pour technique">
+                                <span id="eqClicksHint" style="font-size: 10.5px; color: var(--muted); margin-top: 3px; display: block;">Recommended grind consistency and water temperature for this brewer.</span>
                             </div>
                         </div>
 
@@ -429,9 +471,11 @@
             typeSelect.addEventListener("change", () => {
                 updateBrandChips(typeSelect.value);
                 updateEquipmentChips(typeSelect.value);
+                updateNoteFieldConfig(typeSelect.value);
             });
             updateBrandChips(typeSelect.value);
             updateEquipmentChips(typeSelect.value);
+            updateNoteFieldConfig(typeSelect.value);
         }
 
         if (nameInput) {
@@ -476,6 +520,7 @@
         if (typeSelect) {
             updateBrandChips(typeSelect.value);
             updateEquipmentChips(typeSelect.value);
+            updateNoteFieldConfig(typeSelect.value);
         }
         const modal = document.getElementById("sipwiseEquipmentModal");
         if (modal) {
