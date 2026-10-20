@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sipwise — Discover Better Coffee</title>
+
+    <meta
+        name="description"
+        content="Discover exceptional Indian coffee roasters, specialty beans, and your next favourite cup."
+    >
+
+    <link rel="stylesheet" href="css/style.css?v=14">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <a href="#" class="logo">sipwise<span>.</span></a>
+
+        <nav class="nav-links">
+            <a href="#roasters">Roasters</a>
+            <a href="brew-guide.html">Brew Guide</a>
+            <a href="beans.html">Beans</a>
+            <a href="#about">Our Story</a>
+        </nav>
+
+        <a href="#coffee" class="nav-button">Explore coffee ↗</a>
+    </header>
+
+
+    <!-- Hero section -->
+    <main>
+
+        <section class="hero" id="discover">
+
+            <div class="hero-content">
+
+                <p class="eyebrow">A BETTER CUP STARTS HERE</p>
+
+                <h1>
+                    Good coffee.<br>
+                    <span>Better discoveries.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Discover exceptional coffee from India's finest
+                    roasters. Find beans worth waking up for.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#roasters" class="button-primary">
+                        Discover roasters ↗
+                    </a>
+
+                    <a href="#about" class="text-link">
+                        Get to know us
+                    </a>
+                </div>
+
+                <div class="hero-note">
+                    <span class="note-dot"></span>
+                    Curated for the curious coffee drinker
+                </div>
+
+            </div>
+
+            <div class="hero-image">
+                <img
+                    src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=85"
+                    alt="Freshly brewed specialty coffee"
+                >
+
+                <div class="image-caption">
+                    <span>THE DAILY RITUAL</span>
+                    <span>01 / DISCOVER</span>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- Introduction strip -->
+        <section class="intro-strip" id="about">
+
+            <p>GOOD BEANS, GOOD PEOPLE, GOOD COFFEE.</p>
+
+            <p>
+                From Indian coffee farms to your morning cup.
+                <span>☕</span>
+            </p>
+
+        </section>
+
+
+        <!-- Roasters section -->
+        <section class="roasters-section" id="roasters">
+
+            <div class="section-heading">
+
+                <div>
+                    <p class="eyebrow">THE PEOPLE BEHIND THE CUP</p>
+                    <h2>Meet your next<br>favourite roaster.</h2>
+                </div>
+
+                <a href="#coffee" class="text-link">
+                    Explore the collection ↗
+                </a>
+
+            </div>
+
+            <!-- Search & Filter Bar -->
+            <div class="search-container" id="coffee">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Search roasters, cities, or specialty beans (e.g. Subko, Mumbai, Microlots)..."
+                        aria-label="Search roasters by name or city"
+                    >
+                </div>
+                <div class="search-meta">
+                    <span id="roasterCount">Showing all roasters</span>
+                </div>
+            </div>
+
+            <!-- Quick Filter Chips -->
+            <div class="filter-chips" id="filterChips" role="group" aria-label="Filter roasters by category">
+                <button type="button" class="chip active" data-filter="all">All Roasters</button>
+                <button type="button" class="chip" data-filter="bengaluru">Bengaluru</button>
+                <button type="button" class="chip" data-filter="mumbai">Mumbai</button>
+                <button type="button" class="chip" data-filter="experimental">Experimental</button>
+                <button type="button" class="chip" data-filter="single-origin">Single Origin</button>
+                <button type="button" class="chip" data-filter="organic">Organic</button>
+            </div>
+
+            <!-- Dynamic Roasters Grid -->
+            <div class="roasters-grid" id="roastersGrid">
+                <!-- Injected dynamically via JS -->
+            </div>
+
+            <!-- Empty state when no matches found -->
+            <div class="no-results hidden" id="noResults">
+                <span class="no-results-icon">☕</span>
+                <h3>No roasters found</h3>
+                <p>We couldn't find any roasters matching your query. Try searching for another city or brand.</p>
+                <button type="button" id="resetSearchBtn" class="button-primary">Clear search</button>
+            </div>
+
+        </section>
+
+
+        <!-- Brewing Equipment Guide Banner -->
+        <section class="brew-guide-banner">
+            <div class="brew-guide-banner-content">
+                <p class="eyebrow">EQUIPMENT & BREW METHODS</p>
+                <h2>Master your morning ritual.</h2>
+                <p>
+                    From the rich nostalgia of a South Indian brass filter to the clarity of a V60 pour-over, discover step-by-step extraction recipes and grind profiles tailored to Indian specialty roasts.
+                </p>
+                <a href="brew-guide.html" class="button-primary">
+                    Explore Brewing Guides ↗
+                </a>
+            </div>
+
+            <div class="brew-guide-banner-visual">
+                <a href="brew-guide.html#v60" class="gear-preview-tag">☕ V60 Pour-Over</a>
+                <a href="brew-guide.html#south-indian-filter" class="gear-preview-tag">🇮🇳 South Indian Filter</a>
+                <a href="brew-guide.html#aeropress" class="gear-preview-tag">💨 AeroPress</a>
+                <a href="brew-guide.html#french-press" class="gear-preview-tag">🫖 French Press</a>
+                <a href="brew-guide.html#moka-pot" class="gear-preview-tag">🔥 Moka Pot</a>
+                <a href="brew-guide.html#cold-brew" class="gear-preview-tag">🧊 Cold Brew</a>
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <a href="#" class="logo">sipwise<span>.</span></a>
+
+        <p>Made for the love of good coffee.</p>
+
+        <p>© 2026 Sipwise</p>
+    </footer>
+
+    <!-- Slide-over Roaster Detail Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true">
+        <aside class="drawer" id="roasterDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+            <button type="button" class="drawer-close-btn" id="drawerCloseBtn" aria-label="Close details">
+                ✕
+            </button>
+            <div class="drawer-content" id="drawerContent">
+                <!-- Injected dynamically via JS -->
+            </div>
+        </aside>
+    </div>
+
+    <!-- Application Script -->
+    <script src="js/app.js?v=9" defer></script>
+</body>
+</html>

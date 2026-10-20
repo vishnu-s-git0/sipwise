@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sipwise — Indian Specialty Coffee Beans & Taste Matcher</title>
+
+    <meta
+        name="description"
+        content="Explore curated Indian specialty coffee beans, single estate harvests, and use our interactive Taste Matcher to find the perfect bean for your brew method."
+    >
+
+    <link rel="stylesheet" href="css/style.css?v=14">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <a href="index.html" class="logo">sipwise<span>.</span></a>
+
+        <nav class="nav-links">
+            <a href="index.html#roasters">Roasters</a>
+            <a href="brew-guide.html">Brew Guide</a>
+            <a href="beans.html" class="active-nav">Beans</a>
+            <a href="index.html#about">Our Story</a>
+        </nav>
+
+        <a href="index.html#coffee" class="nav-button">Explore roasters ↗</a>
+    </header>
+
+
+    <main>
+
+        <!-- Beans Hero -->
+        <section class="beans-hero">
+            <p class="eyebrow">ESTATE ORIGINS & MICRO-LOTS</p>
+            <h1>Exceptional Beans.<br><span>Sourced from Indian soil.</span></h1>
+            <p class="beans-hero-desc">
+                From shade-grown biodynamic cherries in the Araku Valley to experimental anaerobic fermentations in Chikmagalur and cold-smoked lots in Coorg. Use our interactive Taste Matcher below or explore the full harvest catalog.
+            </p>
+        </section>
+
+
+        <!-- Option 2: Interactive "Find Your Bean" Taste Matcher -->
+        <section class="taste-matcher-section">
+            <div class="taste-matcher-box">
+                <div class="matcher-header">
+                    <div>
+                        <span class="eyebrow">TASTE MATCHER WIZARD</span>
+                        <h2>Find your ideal bean in 10 seconds.</h2>
+                    </div>
+                    <span class="matcher-badge">Interactive Finder</span>
+                </div>
+
+                <!-- Wizard Steps -->
+                <div class="matcher-steps-grid">
+                    
+                    <!-- Step 1: Brew Method -->
+                    <div class="matcher-step" data-step="method">
+                        <span class="step-label">1. YOUR BREW METHOD</span>
+                        <div class="matcher-options">
+                            <button type="button" class="matcher-btn selected" data-value="all">Any Method</button>
+                            <button type="button" class="matcher-btn" data-value="v60">☕ V60 Pour-Over</button>
+                            <button type="button" class="matcher-btn" data-value="south-indian-filter">🇮🇳 South Indian Filter</button>
+                            <button type="button" class="matcher-btn" data-value="aeropress">💨 AeroPress</button>
+                            <button type="button" class="matcher-btn" data-value="french-press">🫖 French Press</button>
+                            <button type="button" class="matcher-btn" data-value="moka-pot">🔥 Moka Pot</button>
+                            <button type="button" class="matcher-btn" data-value="cold-brew">🧊 Cold Brew</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Flavor Craving -->
+                    <div class="matcher-step" data-step="flavor">
+                        <span class="step-label">2. FLAVORS YOU CRAVE</span>
+                        <div class="matcher-options">
+                            <button type="button" class="matcher-btn selected" data-value="all">All Notes</button>
+                            <button type="button" class="matcher-btn" data-value="chocolate">🍫 Chocolate & Caramel</button>
+                            <button type="button" class="matcher-btn" data-value="fruity">🍓 Berries & Tropical Fruit</button>
+                            <button type="button" class="matcher-btn" data-value="floral">🌸 Floral & Jasmine</button>
+                            <button type="button" class="matcher-btn" data-value="spiced">🪵 Smoked & Warm Spices</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Milk Preference -->
+                    <div class="matcher-step" data-step="milk">
+                        <span class="step-label">3. BLACK OR WITH MILK?</span>
+                        <div class="matcher-options">
+                            <button type="button" class="matcher-btn selected" data-value="all">Any Way</button>
+                            <button type="button" class="matcher-btn" data-value="black">✨ Pure Black Coffee</button>
+                            <button type="button" class="matcher-btn" data-value="milk">🥛 Rich With Milk / Kaapi</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Active Match Status Bar -->
+                <div class="taste-match-banner hidden" id="tasteMatchBanner">
+                    <span>✨ Filtering catalog based on your taste selections</span>
+                    <button type="button" id="clearTasteMatchBtn" class="clear-matcher-btn">Reset Taste Finder ✕</button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Option 1: Full Filterable Bean Catalog -->
+        <section class="beans-catalog-section" id="catalog">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">THE SPECIALTY HARVEST CATALOG</p>
+                    <h2>Explore Indian Estates.</h2>
+                </div>
+            </div>
+
+            <!-- Search & Filter Controls -->
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input
+                        type="search"
+                        id="beanSearchInput"
+                        placeholder="Search by flavor, estate, or roaster (e.g. Attikan, Chocolate, Honey, Subko)..."
+                        aria-label="Search coffee beans"
+                    >
+                </div>
+
+                <div class="search-meta">
+                    <span id="beanCount">Showing all specialty beans</span>
+                </div>
+            </div>
+
+            <!-- Quick Filter Chips -->
+            <div class="filter-chips bean-filter-chips" role="group" aria-label="Filter beans by roast and processing">
+                <button type="button" class="chip active" data-filter="all">All Beans</button>
+                <button type="button" class="chip" data-filter="light">Light Roast</button>
+                <button type="button" class="chip" data-filter="medium">Medium Roast</button>
+                <button type="button" class="chip" data-filter="dark">Dark Roast</button>
+                <button type="button" class="chip" data-filter="washed">Washed</button>
+                <button type="button" class="chip" data-filter="natural">Naturals</button>
+                <button type="button" class="chip" data-filter="experimental">Experimental / Yeast</button>
+                <button type="button" class="chip" data-filter="monsooned">Monsooned Malabar</button>
+            </div>
+
+            <!-- 2-per-row Bean Cards Grid -->
+            <div class="beans-grid" id="beansGrid">
+                <!-- Dynamically populated via js/beans.js -->
+            </div>
+
+            <!-- Empty state when no matches found -->
+            <div class="no-results hidden" id="noBeanResults">
+                <span class="no-results-icon">☕</span>
+                <h3>No beans found matching your taste</h3>
+                <p>Try clearing your taste matcher filters or search for another flavor or estate.</p>
+                <button type="button" id="resetBeanSearchBtn" class="button-primary">Clear all filters</button>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <a href="index.html" class="logo">sipwise<span>.</span></a>
+
+        <p>Made for the love of good coffee.</p>
+
+        <p>© 2026 Sipwise</p>
+    </footer>
+
+    <!-- Beans Application Script -->
+    <script src="js/beans.js?v=13" defer></script>
+</body>
+</html>
