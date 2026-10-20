@@ -163,7 +163,10 @@
                     <span class="auth-brand-badge">PERSONAL REPOSITORY</span>
                     <h2 id="shelfTitle">My Saved Shelf</h2>
                 </div>
-                <button type="button" class="drawer-close-btn" id="shelfCloseBtn" aria-label="Close shelf">✕</button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="drawer-action-btn" onclick="if(window.SipwiseEquipment) SipwiseEquipment.openEquipmentModal()" title="Open Equipment Locker" style="background:var(--paper); border:1px solid var(--border); border-radius:4px; padding:5px 10px; font-size:12px; cursor:pointer; color:var(--brown); font-family:inherit;">⚙️ Locker</button>
+                    <button type="button" class="drawer-close-btn" id="shelfCloseBtn" aria-label="Close shelf">✕</button>
+                </div>
             </div>
 
             <div class="shelf-filter-chips" role="tablist">

@@ -56,6 +56,22 @@
         }
     }
 
+    function showToast(message) {
+        let toast = document.getElementById("sipwiseToast");
+        if (!toast) {
+            toast = document.createElement("div");
+            toast.id = "sipwiseToast";
+            toast.className = "sipwise-toast";
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.classList.add("is-visible");
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.classList.remove("is-visible");
+        }, 2800);
+    }
+
     function getLocalEquipment() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -143,9 +159,7 @@
         }
 
         renderEquipmentLocker();
-        if (window.SipwiseToast) {
-            window.SipwiseToast.show(`Added ${newItem.name} to Equipment Locker ⚙️`, "success");
-        }
+        showToast(`Added ${newItem.name} to Locker ⚙️`);
         return newItem;
     }
 
@@ -169,9 +183,7 @@
         }
 
         renderEquipmentLocker();
-        if (window.SipwiseToast) {
-            window.SipwiseToast.show("Equipment removed", "info");
-        }
+        showToast("Equipment removed from locker");
     }
 
     /**
@@ -185,8 +197,8 @@
 
         if (items.length === 0) {
             listEl.innerHTML = `
-                <div class="empty-state-notice">
-                    <p>No equipment logged yet. Add your grinder or brewer to dial in your dialled-in clicks!</p>
+                <div class="empty-state-notice" style="padding: 24px; text-align: center; color: var(--muted);">
+                    <p>No equipment in your locker yet. Add your grinder or brewer below!</p>
                 </div>
             `;
             return;
@@ -227,12 +239,14 @@
         if (document.getElementById("sipwiseEquipmentModal")) return;
 
         const modalHTML = `
-        <div class="auth-modal-overlay" id="sipwiseEquipmentModal" style="display: none;">
-            <div class="auth-modal-card equipment-modal-card">
-                <button type="button" class="auth-close-btn" id="equipmentCloseBtn">&times;</button>
+        <div id="sipwiseEquipmentModal" class="sipwise-modal-overlay" aria-hidden="true">
+            <div class="sipwise-modal-dialog equipment-modal-card" role="dialog" aria-modal="true" aria-labelledby="equipmentHeading">
+                <button type="button" class="modal-close-btn" id="equipmentCloseBtn" aria-label="Close modal">✕</button>
+                
                 <div class="auth-modal-header">
-                    <h2>⚙️ My Equipment Locker</h2>
-                    <p>Manage your grinders, brewers, and dial-in click presets for quick kitchen logging.</p>
+                    <span class="auth-brand-badge">GEAR &amp; DIAL-IN</span>
+                    <h2 id="equipmentHeading">⚙️ My Equipment Locker</h2>
+                    <p class="auth-modal-sub">Manage your grinders, brewers, and dial-in click presets for quick kitchen logging.</p>
                 </div>
 
                 <div class="equipment-tabs">
@@ -241,7 +255,7 @@
 
                 <div class="add-equipment-form-box">
                     <h3>+ Add Gear to Locker</h3>
-                    <form id="addEquipmentForm">
+                    <form id="addEquipmentForm" class="auth-form-content">
                         <div class="log-form-row">
                             <div class="auth-field-group" style="flex: 1;">
                                 <label for="eqType">Gear Type</label>
@@ -260,16 +274,16 @@
 
                         <div class="log-form-row">
                             <div class="auth-field-group" style="flex: 1;">
-                                <label for="eqBrand">Brand / Roaster</label>
-                                <input type="text" id="eqBrand" placeholder="e.g. Comandante, Fellow, Hario">
+                                <label for="eqBrand">Brand</label>
+                                <input type="text" id="eqBrand" placeholder="e.g. Timemore, Hario, Fellow">
                             </div>
                             <div class="auth-field-group" style="flex: 1.5;">
-                                <label for="eqClicks">Default Dial-in Clicks / Notes</label>
-                                <input type="text" id="eqClicks" placeholder="e.g. 24 clicks for Pour-over">
+                                <label for="eqClicks">Dial-in Clicks / Notes</label>
+                                <input type="text" id="eqClicks" placeholder="e.g. 14 clicks (V60) / 10 clicks (AeroPress)">
                             </div>
                         </div>
 
-                        <button type="submit" class="auth-submit-btn">Save Equipment to Locker</button>
+                        <button type="submit" class="auth-submit-btn" style="margin-top: 12px;">Save Equipment to Locker</button>
                     </form>
                 </div>
             </div>
@@ -281,12 +295,10 @@
         const closeBtn = document.getElementById("equipmentCloseBtn");
         const form = document.getElementById("addEquipmentForm");
 
-        closeBtn.addEventListener("click", () => {
-            modal.style.display = "none";
-        });
+        closeBtn.addEventListener("click", closeEquipmentModal);
 
         modal.addEventListener("click", (e) => {
-            if (e.target === modal) modal.style.display = "none";
+            if (e.target === modal) closeEquipmentModal();
         });
 
         form.addEventListener("submit", async (e) => {
@@ -296,7 +308,7 @@
             const brand = document.getElementById("eqBrand").value;
             const clicks = document.getElementById("eqClicks").value;
 
-            if (!name) return;
+            if (!name || !name.trim()) return;
 
             await addEquipment({
                 equipmentType: type,
@@ -313,7 +325,20 @@
         ensureEquipmentModal();
         renderEquipmentLocker();
         const modal = document.getElementById("sipwiseEquipmentModal");
-        if (modal) modal.style.display = "flex";
+        if (modal) {
+            modal.classList.add("is-visible");
+            modal.setAttribute("aria-hidden", "false");
+            document.body.style.overflow = "hidden";
+        }
+    }
+
+    function closeEquipmentModal() {
+        const modal = document.getElementById("sipwiseEquipmentModal");
+        if (modal) {
+            modal.classList.remove("is-visible");
+            modal.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+        }
     }
 
     function escapeHTML(str) {
@@ -332,10 +357,26 @@
         addEquipment,
         deleteEquipment,
         openEquipmentModal,
+        closeEquipmentModal,
         renderEquipmentLocker
     };
 
     document.addEventListener("DOMContentLoaded", () => {
         initClient();
+        if (window.location.hash === "#locker") {
+            setTimeout(openEquipmentModal, 200);
+        }
+    });
+
+    window.addEventListener("hashchange", () => {
+        if (window.location.hash === "#locker") {
+            openEquipmentModal();
+        }
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            closeEquipmentModal();
+        }
     });
 })();
