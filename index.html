@@ -11,12 +11,13 @@
         content="Discover exceptional Indian coffee roasters, specialty beans, and your next favourite cup."
     >
 
-    <link rel="stylesheet" href="css/style.css?v=17">
-    <script src="js/config.js?v=17" defer></script>
-    <script src="js/auth.js?v=17" defer></script>
-    <script src="js/bookmarks.js?v=17" defer></script>
-    <script src="js/journal.js?v=17" defer></script>
-    <script src="js/reviews.js?v=17" defer></script>
+    <link rel="stylesheet" href="css/style.css?v=18">
+    <script src="js/config.js?v=18" defer></script>
+    <script src="js/auth.js?v=18" defer></script>
+    <script src="js/inventory.js?v=18" defer></script>
+    <script src="js/bookmarks.js?v=18" defer></script>
+    <script src="js/journal.js?v=18" defer></script>
+    <script src="js/reviews.js?v=18" defer></script>
 </head>
 
 <body>
@@ -104,6 +105,30 @@
                 <span>☕</span>
             </p>
 
+        </section>
+
+
+        <!-- Today's Brew & Active Coffee Stash Dashboard Strip -->
+        <section class="dashboard-strip-section" id="dailyDashboard">
+            <div class="dashboard-strip-inner">
+                <div class="dash-stash-summary">
+                    <span class="auth-brand-badge">TODAY'S BREW & INVENTORY</span>
+                    <h3>Your Coffee Stash</h3>
+                    <p class="dash-stash-desc">You have <strong id="dashGramsCount">325g</strong> of specialty coffee remaining across <strong id="dashBagsCount">2 active bags</strong>.</p>
+                </div>
+
+                <div class="dash-quick-actions">
+                    <a href="brew-guide.html#calculator" class="dash-action-btn primary-btn">
+                        Start Today's Brew ⏱
+                    </a>
+                    <button type="button" class="dash-action-btn secondary-btn" onclick="SipwiseJournal.openLogCupModal()">
+                        + Log a Cup 📓
+                    </button>
+                    <a href="beans.html#myBeansInventory" class="dash-action-btn text-link-btn">
+                        Manage Bags (<span class="inventory-count-badge">0</span>) →
+                    </a>
+                </div>
+            </div>
         </section>
 
 

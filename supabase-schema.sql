@@ -87,6 +87,7 @@ create table if not exists public.blog_posts (
 create table if not exists public.brew_journal (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users on delete cascade not null,
+  bag_id uuid references public.coffee_bags on delete set null,
   bean_name text not null,
   roaster_name text,
   gear_id text not null,
@@ -102,6 +103,34 @@ create table if not exists public.brew_journal (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- 6. My Beans / Coffee Bags Inventory
+create table if not exists public.coffee_bags (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  coffee_id text,
+  coffee_name text not null,
+  roaster text not null,
+  roast_date date not null,
+  purchase_date date default current_date,
+  initial_weight_grams numeric(6,1) default 250 not null,
+  remaining_weight_grams numeric(6,1) default 250 not null,
+  price_inr numeric(7,2),
+  status text default 'active' check (status in ('active', 'finished', 'frozen')),
+  notes text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 7. User Equipment Locker
+create table if not exists public.user_equipment (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  equipment_type text not null check (equipment_type in ('grinder', 'brewer', 'scale', 'kettle')),
+  name text not null,
+  brand text,
+  default_clicks text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
 
 -- ==============================================================================
 -- Row-Level Security (RLS) Policies
@@ -112,6 +141,8 @@ alter table public.saved_items enable row level security;
 alter table public.reviews enable row level security;
 alter table public.blog_posts enable row level security;
 alter table public.brew_journal enable row level security;
+alter table public.coffee_bags enable row level security;
+alter table public.user_equipment enable row level security;
 
 -- Profiles Policies
 create policy "Public profiles are viewable by everyone" 
@@ -159,3 +190,11 @@ create policy "Users can update own brew journal entries"
 
 create policy "Users can delete own brew journal entries" 
   on public.brew_journal for delete using (auth.uid() = user_id);
+
+-- Coffee Bags Policies (Strictly private per user)
+create policy "Users can manage own coffee bags" 
+  on public.coffee_bags for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- User Equipment Policies (Strictly private per user)
+create policy "Users can manage own equipment" 
+  on public.user_equipment for all using (auth.uid() = user_id) with check (auth.uid() = user_id);

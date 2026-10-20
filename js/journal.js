@@ -269,6 +269,14 @@
                 </div>
 
                 <form id="logCupForm" class="auth-form-content">
+                    <!-- Inventory Coffee Bag Selector -->
+                    <div class="auth-field-group">
+                        <label for="jrnBagSelect">📦 Active Coffee Bag (Auto-Deducts Weight)</label>
+                        <select id="jrnBagSelect">
+                            <option value="">-- Custom / Unlisted Bag --</option>
+                        </select>
+                    </div>
+
                     <!-- Bean & Roaster -->
                     <div class="log-form-row">
                         <div class="auth-field-group" style="flex: 1.2;">
@@ -454,11 +462,19 @@
                 (b) => b.dataset.tag
             );
 
+            const bagSelect = document.getElementById("jrnBagSelect");
+            const selectedBagId = bagSelect ? bagSelect.value : null;
+
             const saveBtn = document.getElementById("saveCupBtn");
             saveBtn.disabled = true;
             saveBtn.textContent = "Saving to Journal...";
 
             try {
+                // Auto-deduct coffee dose from bag if bag is selected
+                if (selectedBagId && window.SipwiseInventory && window.SipwiseInventory.deductFromBag) {
+                    await window.SipwiseInventory.deductFromBag(selectedBagId, doseGrams);
+                }
+
                 await addJournalEntry({
                     beanName,
                     roasterName,
@@ -489,9 +505,36 @@
         });
     }
 
-    function openLogCupModal(prefill = {}) {
+    async function openLogCupModal(prefill = {}) {
         ensureLogCupModal();
         const modal = document.getElementById("sipwiseLogCupModal");
+
+        // Populate active bags dropdown
+        const bagSelect = document.getElementById("jrnBagSelect");
+        if (bagSelect && window.SipwiseInventory) {
+            const activeBags = await window.SipwiseInventory.getBags("active");
+            bagSelect.innerHTML = `<option value="">-- Custom / Unlisted Bag --</option>` +
+                activeBags.map(b => `<option value="${b.id}" data-name="${b.coffeeName}" data-roaster="${b.roaster}">${b.coffeeName} (${b.remainingWeightGrams}g left)</option>`).join("");
+
+            bagSelect.onchange = () => {
+                const opt = bagSelect.options[bagSelect.selectedIndex];
+                if (opt && opt.value) {
+                    const beanEl = document.getElementById("jrnBeanName");
+                    const roasterEl = document.getElementById("jrnRoasterName");
+                    if (beanEl) beanEl.value = opt.dataset.name || "";
+                    if (roasterEl) roasterEl.value = opt.dataset.roaster || "";
+                }
+            };
+
+            // Auto-select first active bag if available and not custom prefilled
+            if (activeBags.length > 0 && !prefill.bean) {
+                bagSelect.value = activeBags[0].id;
+                const beanEl = document.getElementById("jrnBeanName");
+                const roasterEl = document.getElementById("jrnRoasterName");
+                if (beanEl) beanEl.value = activeBags[0].coffeeName;
+                if (roasterEl) roasterEl.value = activeBags[0].roaster;
+            }
+        }
 
         if (prefill.gearId) {
             const gearSelect = document.getElementById("jrnGearSelect");

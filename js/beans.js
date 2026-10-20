@@ -252,7 +252,10 @@ function createBeanCardHTML(bean) {
 
                 <div class="bean-card-footer">
                     <span class="bean-milk-tag">${bean.milkFriendly ? "☕ Great with or without milk" : "✨ Best enjoyed black"}</span>
-                    <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <button type="button" class="add-to-stash-btn" onclick="SipwiseInventory.openAddBagModal({ coffeeName: '${bean.name.replace(/'/g, "\\'")}', roaster: '${bean.roaster.replace(/'/g, "\\'")}' })" title="Add this bag to your personal inventory">
+                            + Add to My Bags
+                        </button>
                         <button type="button" class="toggle-bean-reviews-btn" data-id="${bean.id}" data-name="${bean.name}">
                             ★ Community Reviews
                         </button>
