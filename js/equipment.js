@@ -232,6 +232,31 @@
             .join("");
     }
 
+    const BRAND_PRESETS = {
+        brewer: ["Hario", "AeroPress", "Bialetti", "Kalita", "Origami", "Bodum", "Traditional Brass", "Fellow"],
+        grinder: ["Timemore", "Comandante", "1Zpresso", "Fellow", "Baratza", "Eureka", "Kingrinder", "Porlex"],
+        kettle: ["Fellow", "Hario", "Brewista", "Timemore", "Bonavita"],
+        scale: ["Timemore", "Acaia", "Hario", "Weightman", "Fellow"]
+    };
+
+    function updateBrandChips(type) {
+        const row = document.getElementById("brandSuggestionsRow");
+        if (!row) return;
+        const brands = BRAND_PRESETS[type] || BRAND_PRESETS.brewer;
+        row.innerHTML = `<span style="font-size:10.5px; color:var(--muted); font-weight:600; text-transform:uppercase;">Popular:</span> ` +
+            brands.map(b => `<button type="button" class="brand-chip" data-brand="${b}">${b}</button>`).join("");
+
+        row.querySelectorAll(".brand-chip").forEach(chip => {
+            chip.addEventListener("click", () => {
+                const brandInput = document.getElementById("eqBrand");
+                if (brandInput) {
+                    brandInput.value = chip.dataset.brand;
+                    brandInput.focus();
+                }
+            });
+        });
+    }
+
     /**
      * Equipment Locker Modal logic
      */
@@ -273,11 +298,33 @@
                         </div>
 
                         <div class="log-form-row">
-                            <div class="auth-field-group" style="flex: 1;">
+                            <div class="auth-field-group" style="flex: 1.2;">
                                 <label for="eqBrand">Brand</label>
-                                <input type="text" id="eqBrand" placeholder="e.g. Timemore, Hario, Fellow">
+                                <input type="text" id="eqBrand" list="popularBrandsDatalist" placeholder="e.g. Timemore, Hario, Fellow" autocomplete="off">
+                                <datalist id="popularBrandsDatalist">
+                                    <option value="Hario">
+                                    <option value="Timemore">
+                                    <option value="AeroPress">
+                                    <option value="Fellow">
+                                    <option value="Comandante">
+                                    <option value="1Zpresso">
+                                    <option value="Baratza">
+                                    <option value="Bialetti">
+                                    <option value="Kalita">
+                                    <option value="Origami">
+                                    <option value="Eureka">
+                                    <option value="Bodum">
+                                    <option value="Flair">
+                                    <option value="Traditional Brass">
+                                    <option value="Brewista">
+                                    <option value="Acaia">
+                                    <option value="Kingrinder">
+                                </datalist>
+                                <div class="brand-suggestions-row" id="brandSuggestionsRow">
+                                    <!-- Dynamic brand suggestion chips populated based on gear type -->
+                                </div>
                             </div>
-                            <div class="auth-field-group" style="flex: 1.5;">
+                            <div class="auth-field-group" style="flex: 1.2;">
                                 <label for="eqClicks">Dial-in Clicks / Notes</label>
                                 <input type="text" id="eqClicks" placeholder="e.g. 14 clicks (V60) / 10 clicks (AeroPress)">
                             </div>
@@ -300,6 +347,14 @@
         modal.addEventListener("click", (e) => {
             if (e.target === modal) closeEquipmentModal();
         });
+
+        const typeSelect = document.getElementById("eqType");
+        if (typeSelect) {
+            typeSelect.addEventListener("change", () => {
+                updateBrandChips(typeSelect.value);
+            });
+            updateBrandChips(typeSelect.value);
+        }
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -324,6 +379,8 @@
     function openEquipmentModal() {
         ensureEquipmentModal();
         renderEquipmentLocker();
+        const typeSelect = document.getElementById("eqType");
+        if (typeSelect) updateBrandChips(typeSelect.value);
         const modal = document.getElementById("sipwiseEquipmentModal");
         if (modal) {
             modal.classList.add("is-visible");
