@@ -245,6 +245,7 @@
                     <div class="auth-field-group">
                         <label for="signInEmail">Email Address</label>
                         <input type="email" id="signInEmail" required placeholder="name@example.com" autocomplete="email">
+                        <span class="field-error-hint" id="signInEmailError"></span>
                     </div>
                     <div class="auth-field-group">
                         <label for="signInPassword">Password</label>
@@ -269,6 +270,7 @@
                     <div class="auth-field-group">
                         <label for="signUpEmail">Email Address</label>
                         <input type="email" id="signUpEmail" required placeholder="name@example.com" autocomplete="email">
+                        <span class="field-error-hint" id="signUpEmailError"></span>
                     </div>
                     <div class="auth-field-group">
                         <label for="signUpCity">City / Location</label>
@@ -330,6 +332,54 @@
         const heading = document.getElementById("authModalHeading");
         const alertBox = document.getElementById("authAlertBox");
         const demoFillBtn = document.getElementById("fillDemoAccountBtn");
+        const signInEmailInput = document.getElementById("signInEmail");
+        const signInEmailError = document.getElementById("signInEmailError");
+        const signUpEmailInput = document.getElementById("signUpEmail");
+        const signUpEmailError = document.getElementById("signUpEmailError");
+
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+            return re.test(String(email).trim().toLowerCase());
+        }
+
+        function validateEmailInput(inputEl, errorEl, isTouched = false) {
+            if (!inputEl || !errorEl) return false;
+            const val = inputEl.value.trim();
+
+            if (!val) {
+                inputEl.classList.remove("is-valid", "is-invalid");
+                errorEl.textContent = "";
+                errorEl.classList.remove("is-visible");
+                return false;
+            }
+
+            const valid = isValidEmail(val);
+            if (valid) {
+                inputEl.classList.remove("is-invalid");
+                inputEl.classList.add("is-valid");
+                errorEl.textContent = "";
+                errorEl.classList.remove("is-visible");
+                return true;
+            } else {
+                if (isTouched || val.includes("@") || val.length > 5) {
+                    inputEl.classList.remove("is-valid");
+                    inputEl.classList.add("is-invalid");
+                    errorEl.textContent = "Please enter a valid email address (e.g. name@example.com)";
+                    errorEl.classList.add("is-visible");
+                }
+                return false;
+            }
+        }
+
+        if (signInEmailInput) {
+            signInEmailInput.addEventListener("input", () => validateEmailInput(signInEmailInput, signInEmailError, false));
+            signInEmailInput.addEventListener("blur", () => validateEmailInput(signInEmailInput, signInEmailError, true));
+        }
+
+        if (signUpEmailInput) {
+            signUpEmailInput.addEventListener("input", () => validateEmailInput(signUpEmailInput, signUpEmailError, false));
+            signUpEmailInput.addEventListener("blur", () => validateEmailInput(signUpEmailInput, signUpEmailError, true));
+        }
 
         function showTab(isSignIn) {
             tabSignIn.classList.toggle("active", isSignIn);
@@ -341,6 +391,16 @@
                 alertBox.style.display = "none";
                 alertBox.textContent = "";
             }
+            if (signInEmailError) {
+                signInEmailError.textContent = "";
+                signInEmailError.classList.remove("is-visible");
+            }
+            if (signUpEmailError) {
+                signUpEmailError.textContent = "";
+                signUpEmailError.classList.remove("is-visible");
+            }
+            if (signInEmailInput) signInEmailInput.classList.remove("is-invalid");
+            if (signUpEmailInput) signUpEmailInput.classList.remove("is-invalid");
         }
 
         tabSignIn.addEventListener("click", () => showTab(true));
@@ -356,15 +416,21 @@
             demoFillBtn.addEventListener("click", () => {
                 document.getElementById("signInEmail").value = "aditi@sipwise.coffee";
                 document.getElementById("signInPassword").value = "password123";
+                validateEmailInput(signInEmailInput, signInEmailError, true);
             });
         }
 
         // Sign in submit
         formSignIn.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const email = document.getElementById("signInEmail").value;
+            const email = signInEmailInput.value.trim();
             const password = document.getElementById("signInPassword").value;
             const btn = document.getElementById("signInSubmitBtn");
+
+            if (!validateEmailInput(signInEmailInput, signInEmailError, true)) {
+                signInEmailInput.focus();
+                return;
+            }
 
             btn.disabled = true;
             btn.textContent = "Signing In...";
@@ -391,12 +457,17 @@
         formSignUp.addEventListener("submit", async (e) => {
             e.preventDefault();
             const fullName = document.getElementById("signUpName").value;
-            const email = document.getElementById("signUpEmail").value;
+            const email = signUpEmailInput.value.trim();
             const city = document.getElementById("signUpCity").value;
             const password = document.getElementById("signUpPassword").value;
             const favoriteBrew = document.getElementById("signUpBrew").value;
             const newsletterSubscribed = document.getElementById("signUpNewsletter").checked;
             const btn = document.getElementById("signUpSubmitBtn");
+
+            if (!validateEmailInput(signUpEmailInput, signUpEmailError, true)) {
+                signUpEmailInput.focus();
+                return;
+            }
 
             btn.disabled = true;
             btn.textContent = "Creating Account...";
