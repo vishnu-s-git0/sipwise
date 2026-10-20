@@ -577,6 +577,12 @@
                                 <span>📓 My Tasting Journal</span>
                                 <span class="shelf-count-badge" id="dropdownJournalBadge">0</span>
                             </button>
+                            <button type="button" class="drop-menu-item" id="exportCsvFromMenuBtn">
+                                <span>📥 Export Journal (CSV)</span>
+                            </button>
+                            <button type="button" class="drop-menu-item" id="exportPdfFromMenuBtn">
+                                <span>📄 Print / Save Journal (PDF)</span>
+                            </button>
                             <button type="button" class="drop-menu-item" id="openShelfFromMenuBtn">
                                 <span>♡ My Saved Shelf</span>
                                 <span class="shelf-count-badge" id="dropdownShelfBadge">0</span>
@@ -595,6 +601,26 @@
                 const shelfBtn = container.querySelector("#openShelfFromMenuBtn");
                 const journalBtn = container.querySelector("#openJournalFromMenuBtn");
                 const equipBtn = container.querySelector("#openEquipmentFromMenuBtn");
+                const exportCsvBtn = container.querySelector("#exportCsvFromMenuBtn");
+                const exportPdfBtn = container.querySelector("#exportPdfFromMenuBtn");
+
+                if (exportCsvBtn) {
+                    exportCsvBtn.addEventListener("click", () => {
+                        if (dropdown) dropdown.classList.remove("is-open");
+                        if (window.SipwiseJournal && window.SipwiseJournal.exportToCSV) {
+                            window.SipwiseJournal.exportToCSV();
+                        }
+                    });
+                }
+
+                if (exportPdfBtn) {
+                    exportPdfBtn.addEventListener("click", () => {
+                        if (dropdown) dropdown.classList.remove("is-open");
+                        if (window.SipwiseJournal && window.SipwiseJournal.exportToPDF) {
+                            window.SipwiseJournal.exportToPDF();
+                        }
+                    });
+                }
 
                 if (equipBtn) {
                     equipBtn.addEventListener("click", () => {

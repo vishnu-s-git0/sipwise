@@ -3782,6 +3782,34 @@ img {
     border-color: var(--brown);
 }
 
+.journal-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.jrn-export-btn {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--brown);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.jrn-export-btn:hover {
+    background: var(--paper);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
 /* Journal Entries Stream */
 .journal-entries-list {
     display: flex;

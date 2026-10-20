@@ -657,6 +657,375 @@
         }
     }
 
+    function escapeHTML(str) {
+        if (!str) return "";
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    /**
+     * Export brew history to CSV file
+     */
+    async function exportToCSV() {
+        const entries = await getJournalEntries();
+        if (!entries || entries.length === 0) {
+            alert("No brew journal entries found to export. Log your first cup first!");
+            return;
+        }
+
+        const headers = [
+            "Date",
+            "Coffee Name",
+            "Roaster",
+            "Brewing Equipment",
+            "Coffee Dose (g)",
+            "Water Amount (g)",
+            "Ratio",
+            "Brew Time (MM:SS)",
+            "Grind / Dial-in Setting",
+            "Extraction Diagnosis",
+            "Rating (out of 5)",
+            "Flavor Notes",
+            "Personal Tasting Notes"
+        ];
+
+        function esc(val) {
+            if (val === null || val === undefined) return '""';
+            return `"${String(val).replace(/"/g, '""')}"`;
+        }
+
+        const rows = entries.map((e) => {
+            const dateStr = new Date(e.createdAt).toISOString().split("T")[0];
+            const ratio = e.doseGrams ? `1:${Math.round(e.waterGrams / e.doseGrams)}` : "";
+            const timeStr = formatSeconds(e.brewTimeSeconds);
+            const flavors = Array.isArray(e.flavorTags) ? e.flavorTags.join("; ") : "";
+
+            return [
+                esc(dateStr),
+                esc(e.beanName),
+                esc(e.roasterName || ""),
+                esc(e.gearName || e.gearId),
+                esc(e.doseGrams),
+                esc(e.waterGrams),
+                esc(ratio),
+                esc(timeStr),
+                esc(e.grindSetting || ""),
+                esc(e.extractionResult || ""),
+                esc(e.rating),
+                esc(flavors),
+                esc(e.tastingNotes || "")
+            ].join(",");
+        });
+
+        const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const dateNow = new Date().toISOString().split("T")[0];
+        link.setAttribute("href", url);
+        link.setAttribute("download", `sipwise-brew-journal-${dateNow}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        if (window.SipwiseBookmarks && window.SipwiseBookmarks.showToast) {
+            window.SipwiseBookmarks.showToast("Brew history downloaded as CSV 📥");
+        }
+    }
+
+    /**
+     * Export or print brew history as styled PDF cupping sheet
+     */
+    async function exportToPDF() {
+        const entries = await getJournalEntries();
+        if (!entries || entries.length === 0) {
+            alert("No brew journal entries found to export. Log your first cup first!");
+            return;
+        }
+
+        const stats = await getJournalStats();
+        const user = window.SipwiseAuth ? window.SipwiseAuth.getCurrentUser() : null;
+        const userName = user ? user.fullName : "Coffee Enthusiast";
+        const dateStr = new Date().toLocaleDateString("en-IN", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+        const rowsHTML = entries
+            .map((e) => {
+                const d = new Date(e.createdAt).toLocaleDateString("en-IN", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric"
+                });
+                const stars = "★".repeat(e.rating) + "☆".repeat(5 - e.rating);
+                const ratio = e.doseGrams ? `1:${Math.round(e.waterGrams / e.doseGrams)}` : "";
+                const timeStr = formatSeconds(e.brewTimeSeconds);
+                const tags = (e.flavorTags || [])
+                    .map((t) => `<span class="tag-chip">${escapeHTML(t)}</span>`)
+                    .join(" ");
+
+                return `
+            <tr>
+                <td style="white-space: nowrap; font-weight: 500;">${d}</td>
+                <td>
+                    <strong>${escapeHTML(e.beanName)}</strong>
+                    ${e.roasterName ? `<div style="font-size: 11px; color: #777;">by ${escapeHTML(e.roasterName)}</div>` : ""}
+                </td>
+                <td>${escapeHTML(e.gearName || e.gearId)}</td>
+                <td style="white-space: nowrap;">
+                    ${e.doseGrams}g / ${e.waterGrams}g
+                    <div style="font-size: 11px; color: #777;">Ratio ${ratio} • ${timeStr}</div>
+                </td>
+                <td>${escapeHTML(e.grindSetting || "—")}</td>
+                <td>
+                    <span style="color: #b56c25; font-size: 14px;">${stars}</span>
+                    <div style="font-size: 11px; color: #555;">${escapeHTML(e.extractionResult || "")}</div>
+                </td>
+                <td>
+                    ${tags ? `<div style="margin-bottom: 4px;">${tags}</div>` : ""}
+                    ${e.tastingNotes ? `<div style="font-style: italic; font-size: 11.5px; color: #444;">"${escapeHTML(e.tastingNotes)}"</div>` : "—"}
+                </td>
+            </tr>
+            `;
+            })
+            .join("");
+
+        const printHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sipwise Brew Journal — ${userName}</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 12mm 10mm;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #22140c;
+            background: #fff;
+            margin: 0;
+            padding: 24px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .no-print-bar {
+            background: #24130c;
+            color: #f7eedb;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 6px;
+            margin-bottom: 24px;
+        }
+        .btn-print {
+            background: #c98a4b;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-close {
+            background: transparent;
+            color: #d8c8b8;
+            border: 1px solid #665;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid #24130c;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .brand-logo {
+            font-family: Georgia, serif;
+            font-size: 26px;
+            font-weight: bold;
+            color: #24130c;
+            letter-spacing: -0.5px;
+        }
+        .brand-logo span { color: #c98a4b; }
+        .sheet-title {
+            font-size: 14px;
+            color: #665;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+        .sheet-meta {
+            text-align: right;
+            font-size: 11.5px;
+            color: #555;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: #faf6f0;
+            border: 1px solid #e8decb;
+            border-radius: 6px;
+            padding: 10px 14px;
+        }
+        .stat-label {
+            font-size: 10px;
+            color: #776a5c;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .stat-num {
+            font-size: 18px;
+            font-family: Georgia, serif;
+            font-weight: bold;
+            color: #24130c;
+            margin-top: 2px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11.5px;
+        }
+        th {
+            background: #f4ede2;
+            color: #3b2314;
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 2px solid #c98a4b;
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        tr:nth-child(even) td {
+            background: #faf8f5;
+        }
+        .tag-chip {
+            background: #ede3d3;
+            color: #4a3424;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 9.5px;
+            display: inline-block;
+            margin-right: 2px;
+            margin-bottom: 2px;
+        }
+        .sheet-footer {
+            margin-top: 24px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #888;
+        }
+        @media print {
+            .no-print-bar { display: none !important; }
+            body { padding: 0 !important; }
+            tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print-bar">
+        <div>
+            <strong>📄 Print / Save as PDF Preview</strong>
+            <span style="font-size: 11px; margin-left: 8px; opacity: 0.8;">Choose "Save as PDF" in your print destination</span>
+        </div>
+        <div>
+            <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+            <button class="btn-close" onclick="window.close()">✕ Close</button>
+        </div>
+    </div>
+
+    <div class="sheet-header">
+        <div>
+            <div class="brand-logo">sipwise<span>.</span></div>
+            <div class="sheet-title">Personal Coffee Tasting Journal &amp; Brew History</div>
+        </div>
+        <div class="sheet-meta">
+            <div><strong>Barista:</strong> ${escapeHTML(userName)}</div>
+            <div><strong>Generated:</strong> ${dateStr}</div>
+            <div><strong>Entries:</strong> ${entries.length} ${entries.length === 1 ? "cup" : "cups"}</div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-label">Total Cups</div>
+            <div class="stat-num">${stats.totalCups}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Avg Rating</div>
+            <div class="stat-num">★ ${stats.averageRating}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Favorite Brewer</div>
+            <div class="stat-num" style="font-size: 13px;">${escapeHTML(stats.favoriteGear)}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Top Flavor</div>
+            <div class="stat-num" style="font-size: 13px;">${escapeHTML(stats.topFlavor)}</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 10%;">Date</th>
+                <th style="width: 22%;">Coffee &amp; Roaster</th>
+                <th style="width: 14%;">Equipment</th>
+                <th style="width: 15%;">Recipe &amp; Time</th>
+                <th style="width: 11%;">Grind Setting</th>
+                <th style="width: 12%;">Rating</th>
+                <th style="width: 16%;">Flavors &amp; Impressions</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${rowsHTML}
+        </tbody>
+    </table>
+
+    <div class="sheet-footer">
+        <span>Sipwise — Specialty Coffee Journal &amp; Discovery</span>
+        <span>Generated from local brew logs • https://sipwise.coffee</span>
+    </div>
+</body>
+</html>`;
+
+        const printWindow = window.open("", "_blank");
+        if (printWindow) {
+            printWindow.document.open();
+            printWindow.document.write(printHTML);
+            printWindow.document.close();
+        } else {
+            alert("Popup blocked. Please allow popups for this site to export or print your journal.");
+        }
+    }
+
     /**
      * Render the Journal View inside container
      */
@@ -686,9 +1055,13 @@
 
                 <div class="journal-action-bar">
                     <span class="journal-headline-label">Recent Brew Entries</span>
-                    <button type="button" class="log-manual-cup-btn" id="openManualLogBtn">
-                        + Log a Cup
-                    </button>
+                    <div class="journal-actions-group">
+                        <button type="button" class="jrn-export-btn" id="exportCsvBtn" title="Download Brew History as CSV">📥 CSV</button>
+                        <button type="button" class="jrn-export-btn" id="exportPdfBtn" title="Export or Print as PDF">📄 PDF</button>
+                        <button type="button" class="log-manual-cup-btn" id="openManualLogBtn">
+                            + Log a Cup
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Entries Stream -->
@@ -769,6 +1142,21 @@
             });
         }
 
+        // Bind export buttons
+        const csvBtn = container.querySelector("#exportCsvBtn");
+        if (csvBtn) {
+            csvBtn.addEventListener("click", () => {
+                exportToCSV();
+            });
+        }
+
+        const pdfBtn = container.querySelector("#exportPdfBtn");
+        if (pdfBtn) {
+            pdfBtn.addEventListener("click", () => {
+                exportToPDF();
+            });
+        }
+
         // Bind delete buttons
         container.querySelectorAll(".jrn-delete-btn").forEach((delBtn) => {
             delBtn.addEventListener("click", async (e) => {
@@ -803,6 +1191,8 @@
         openLogCupModal,
         closeLogCupModal,
         renderJournalView,
+        exportToCSV,
+        exportToPDF,
         updateBadge: updateJournalBadge
     };
 
