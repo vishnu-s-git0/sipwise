@@ -2400,10 +2400,28 @@ img {
     margin-top: 2px;
 }
 
-.drop-user-brew {
-    font-size: 11px;
-    color: var(--accent);
+.drop-user-meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 6px;
+    font-size: 11px;
+}
+
+.drop-user-city {
+    color: var(--brown);
+    font-weight: 600;
+}
+
+.drop-user-brew {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.drop-user-newsletter {
+    font-size: 10.5px;
+    color: var(--muted);
+    margin-top: 5px;
     font-weight: 500;
 }
 
@@ -2590,6 +2608,28 @@ img {
 .auth-field-group input:focus,
 .auth-field-group select:focus {
     border-color: var(--accent);
+}
+
+.auth-checkbox-group {
+    margin: 4px 0 2px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--brown);
+    cursor: pointer;
+    line-height: 1.45;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-top: 3px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
 }
 
 .auth-submit-btn {

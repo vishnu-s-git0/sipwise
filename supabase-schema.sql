@@ -8,7 +8,9 @@
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   full_name text not null,
+  city text default 'Bengaluru',
   favorite_brew text default 'Pour-Over (V60)',
+  newsletter_subscribed boolean default true,
   avatar_url text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -17,11 +19,13 @@ create table if not exists public.profiles (
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name, favorite_brew)
+  insert into public.profiles (id, full_name, city, favorite_brew, newsletter_subscribed)
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'full_name', 'Coffee Enthusiast'),
-    coalesce(new.raw_user_meta_data->>'favorite_brew', 'Pour-Over (V60)')
+    coalesce(new.raw_user_meta_data->>'city', 'Bengaluru'),
+    coalesce(new.raw_user_meta_data->>'favorite_brew', 'Pour-Over (V60)'),
+    coalesce((new.raw_user_meta_data->>'newsletter_subscribed')::boolean, true)
   );
   return new;
 end;

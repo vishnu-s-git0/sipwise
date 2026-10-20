@@ -15,7 +15,9 @@
         id: "usr_demo_441829",
         fullName: "Aditi Rao",
         email: "aditi@sipwise.coffee",
+        city: "Bengaluru",
         favoriteBrew: "Hario V60 Pour-Over",
+        newsletterSubscribed: true,
         createdAt: new Date().toISOString()
     };
 
@@ -92,16 +94,22 @@
     /**
      * Auth Methods
      */
-    async function signUp({ fullName, email, password, favoriteBrew }) {
+    async function signUp({ fullName, email, password, city, favoriteBrew, newsletterSubscribed }) {
         email = email.trim().toLowerCase();
         fullName = fullName.trim();
+        city = (city || "Bengaluru").trim();
 
         if (supabaseClient) {
             const { data, error } = await supabaseClient.auth.signUp({
                 email,
                 password,
                 options: {
-                    data: { full_name: fullName, favorite_brew: favoriteBrew }
+                    data: {
+                        full_name: fullName,
+                        city: city,
+                        favorite_brew: favoriteBrew,
+                        newsletter_subscribed: Boolean(newsletterSubscribed)
+                    }
                 }
             });
             if (error) throw error;
@@ -109,7 +117,9 @@
                 id: data.user.id,
                 email: data.user.email,
                 fullName: fullName,
-                favoriteBrew: favoriteBrew
+                city: city,
+                favoriteBrew: favoriteBrew,
+                newsletterSubscribed: Boolean(newsletterSubscribed)
             };
             setSession(user);
             return user;
@@ -126,7 +136,9 @@
             fullName,
             email,
             passwordHash: password,
+            city: city || "Bengaluru",
             favoriteBrew: favoriteBrew || "Pour-Over (V60)",
+            newsletterSubscribed: newsletterSubscribed !== undefined ? Boolean(newsletterSubscribed) : true,
             createdAt: new Date().toISOString()
         };
 
@@ -137,7 +149,9 @@
             id: newUser.id,
             fullName: newUser.fullName,
             email: newUser.email,
-            favoriteBrew: newUser.favoriteBrew
+            city: newUser.city,
+            favoriteBrew: newUser.favoriteBrew,
+            newsletterSubscribed: newUser.newsletterSubscribed
         };
         setSession(sessionUser);
         return sessionUser;
@@ -155,13 +169,17 @@
 
             // Fetch profile
             let fullName = data.user.user_metadata?.full_name || "Coffee Lover";
+            let city = data.user.user_metadata?.city || "Bengaluru";
             let favoriteBrew = data.user.user_metadata?.favorite_brew || "Pour-Over (V60)";
+            let newsletterSubscribed = data.user.user_metadata?.newsletter_subscribed ?? true;
 
             const user = {
                 id: data.user.id,
                 email: data.user.email,
                 fullName,
-                favoriteBrew
+                city,
+                favoriteBrew,
+                newsletterSubscribed
             };
             setSession(user);
             return user;
@@ -182,7 +200,9 @@
             id: found.id,
             fullName: found.fullName,
             email: found.email,
-            favoriteBrew: found.favoriteBrew
+            city: found.city || "Bengaluru",
+            favoriteBrew: found.favoriteBrew,
+            newsletterSubscribed: found.newsletterSubscribed ?? true
         };
         setSession(sessionUser);
         return sessionUser;
@@ -251,6 +271,24 @@
                         <input type="email" id="signUpEmail" required placeholder="name@example.com" autocomplete="email">
                     </div>
                     <div class="auth-field-group">
+                        <label for="signUpCity">City / Location</label>
+                        <input type="text" id="signUpCity" list="indianCoffeeCities" placeholder="e.g. Bengaluru, Mumbai, Delhi" required>
+                        <datalist id="indianCoffeeCities">
+                            <option value="Bengaluru">
+                            <option value="Mumbai">
+                            <option value="Delhi NCR">
+                            <option value="Chennai">
+                            <option value="Hyderabad">
+                            <option value="Pune">
+                            <option value="Kolkata">
+                            <option value="Chikmagalur">
+                            <option value="Coorg">
+                            <option value="Goa">
+                            <option value="Kochi">
+                            <option value="Jaipur">
+                        </datalist>
+                    </div>
+                    <div class="auth-field-group">
                         <label for="signUpPassword">Password (6+ characters)</label>
                         <input type="password" id="signUpPassword" minlength="6" required placeholder="Create a password" autocomplete="new-password">
                     </div>
@@ -265,6 +303,12 @@
                             <option value="Cold Brew">Cold Brew</option>
                             <option value="Espresso">Espresso</option>
                         </select>
+                    </div>
+                    <div class="auth-checkbox-group">
+                        <label class="checkbox-label" for="signUpNewsletter">
+                            <input type="checkbox" id="signUpNewsletter" checked>
+                            <span>Receive monthly Sipwise dispatch (curated micro-lot drops & brewing guides)</span>
+                        </label>
                     </div>
 
                     <button type="submit" class="auth-submit-btn" id="signUpSubmitBtn">Create Free Account</button>
@@ -348,8 +392,10 @@
             e.preventDefault();
             const fullName = document.getElementById("signUpName").value;
             const email = document.getElementById("signUpEmail").value;
+            const city = document.getElementById("signUpCity").value;
             const password = document.getElementById("signUpPassword").value;
             const favoriteBrew = document.getElementById("signUpBrew").value;
+            const newsletterSubscribed = document.getElementById("signUpNewsletter").checked;
             const btn = document.getElementById("signUpSubmitBtn");
 
             btn.disabled = true;
@@ -357,7 +403,14 @@
             alertBox.style.display = "none";
 
             try {
-                const user = await signUp({ fullName, email, password, favoriteBrew });
+                const user = await signUp({
+                    fullName,
+                    email,
+                    city,
+                    password,
+                    favoriteBrew,
+                    newsletterSubscribed
+                });
                 closeAuthModal();
                 if (typeof authSuccessCallback === "function") {
                     authSuccessCallback(user);
@@ -434,7 +487,13 @@
                             <div class="user-dropdown-header">
                                 <div class="drop-user-name">${currentUser.fullName}</div>
                                 <div class="drop-user-email">${currentUser.email}</div>
-                                <div class="drop-user-brew">☕ Prefers: ${currentUser.favoriteBrew}</div>
+                                <div class="drop-user-meta-line">
+                                    <span class="drop-user-city">📍 ${currentUser.city || "Bengaluru"}</span>
+                                    <span class="drop-user-brew">☕ ${currentUser.favoriteBrew}</span>
+                                </div>
+                                <div class="drop-user-newsletter">
+                                    ${currentUser.newsletterSubscribed ? "📬 Monthly Dispatch: Subscribed" : "📭 Monthly Dispatch: Off"}
+                                </div>
                             </div>
                             <div class="user-dropdown-divider"></div>
                             <button type="button" class="drop-menu-item" id="openShelfFromMenuBtn">
