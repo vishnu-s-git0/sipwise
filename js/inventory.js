@@ -512,12 +512,21 @@
         const bag = await getBagById(bagId);
         if (!bag) return;
 
-        // Redirect or scroll to calculator
-        const calc = document.getElementById("calculator");
-        if (calc) {
-            calc.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (window.SipwiseJournal && window.SipwiseJournal.openLogCupModal) {
+            window.SipwiseJournal.openLogCupModal({
+                bean: bag.coffeeName,
+                dose: 15,
+                water: 225
+            });
+            // Pre-select bag in dropdown
+            setTimeout(() => {
+                const bagSelect = document.getElementById("jrnBagSelect");
+                if (bagSelect) {
+                    bagSelect.value = bagId;
+                }
+            }, 50);
         } else {
-            window.location.href = `brew-guide.html#calculator`;
+            window.location.href = `beans.html#quicklog`;
         }
     }
 

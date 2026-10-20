@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#24130c"/>
+      <stop offset="100%" stop-color="#120905"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e6b17e"/>
+      <stop offset="100%" stop-color="#c98a4b"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <!-- Outer border -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="url(#gold)" stroke-width="4" stroke-opacity="0.25"/>
+  <!-- Coffee Cup Silhouette -->
+  <path d="M128 192 C128 192, 136 340, 256 340 C376 340, 384 192, 384 192 Z" fill="url(#gold)" fill-opacity="0.15" stroke="url(#gold)" stroke-width="16" stroke-linejoin="round"/>
+  <!-- Cup Handle -->
+  <path d="M380 220 C420 220, 440 250, 440 280 C440 310, 410 330, 360 330" fill="none" stroke="url(#gold)" stroke-width="16" stroke-linecap="round"/>
+  <!-- Saucer -->
+  <line x1="120" y1="376" x2="392" y2="376" stroke="url(#gold)" stroke-width="16" stroke-linecap="round"/>
+  <!-- Steam Curves -->
+  <path d="M200 160 C190 130, 215 110, 205 80" fill="none" stroke="url(#gold)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M256 150 C246 120, 271 100, 261 70" fill="none" stroke="url(#gold)" stroke-width="12" stroke-linecap="round"/>
+  <path d="M312 160 C302 130, 327 110, 317 80" fill="none" stroke="url(#gold)" stroke-width="12" stroke-linecap="round"/>
+  <!-- Coffee Bean in Cup Center -->
+  <ellipse cx="256" cy="260" rx="36" ry="24" transform="rotate(-30 256 260)" fill="url(#gold)"/>
+  <path d="M236 244 Q256 260 276 276" stroke="#24130c" stroke-width="5" stroke-linecap="round" fill="none"/>
+</svg>

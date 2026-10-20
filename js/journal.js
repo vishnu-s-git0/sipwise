@@ -306,8 +306,8 @@
                             <label for="jrnGearSelect">Brewing Equipment</label>
                             <select id="jrnGearSelect">
                                 <option value="v60" data-name="Hario V60 Pour-Over">☕ Hario V60 Pour-Over</option>
-                                <option value="south-indian-filter" data-name="South Indian Filter">🇮🇳 South Indian Filter</option>
                                 <option value="aeropress" data-name="AeroPress Brewer">💨 AeroPress Brewer</option>
+                                <option value="south-indian-filter" data-name="South Indian Filter">🇮🇳 South Indian Filter</option>
                                 <option value="french-press" data-name="French Press (Plunger)">🫖 French Press</option>
                                 <option value="moka-pot" data-name="Moka Pot (Stovetop)">🔥 Moka Pot</option>
                                 <option value="cold-brew" data-name="Cold Brew Dripper">🧊 Cold Brew</option>
@@ -315,24 +315,37 @@
                             </select>
                         </div>
                         <div class="auth-field-group" style="flex: 0.8;">
-                            <label for="jrnDose">Coffee Dose</label>
+                            <label for="jrnDose">Dose (grams)</label>
                             <input type="number" id="jrnDose" min="5" max="100" step="0.5" value="15" placeholder="15g" required>
                         </div>
                         <div class="auth-field-group" style="flex: 0.8;">
-                            <label for="jrnWater">Total Water</label>
+                            <label for="jrnWater">Water (grams)</label>
                             <input type="number" id="jrnWater" min="20" max="1200" step="1" value="225" placeholder="225g" required>
                         </div>
                     </div>
 
-                    <!-- Time & Grind -->
+                    <!-- Dose Quick Stepper for Mobile Kitchen Logging -->
+                    <div class="dose-quick-steppers">
+                        <span class="stepper-label">Quick Dose:</span>
+                        <button type="button" class="dose-chip" data-dose="12" data-water="180">12g (1:15)</button>
+                        <button type="button" class="dose-chip active" data-dose="15" data-water="225">15g (1:15)</button>
+                        <button type="button" class="dose-chip" data-dose="18" data-water="270">18g (1:15)</button>
+                        <button type="button" class="dose-chip" data-dose="20" data-water="320">20g (1:16)</button>
+                        <button type="button" class="dose-chip" data-dose="30" data-water="450">30g (1:15)</button>
+                    </div>
+
+                    <!-- Time & Grind Dial-In -->
                     <div class="log-form-row">
                         <div class="auth-field-group" style="flex: 1;">
                             <label for="jrnBrewTime">Brew Time (MM:SS)</label>
                             <input type="text" id="jrnBrewTime" placeholder="03:00" value="03:00">
                         </div>
                         <div class="auth-field-group" style="flex: 1.5;">
-                            <label for="jrnGrind">Grind Setting / Click Cues</label>
-                            <input type="text" id="jrnGrind" placeholder="e.g. 18 clicks (Medium-Fine)">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <label for="jrnGrind">Grind Dial-In / Clicks</label>
+                                <a href="javascript:void(0)" onclick="if(window.SipwiseEquipment) window.SipwiseEquipment.openEquipmentModal()" style="font-size:0.75rem; color:var(--color-accent); text-decoration:none;">⚙️ Equipment Locker</a>
+                            </div>
+                            <input type="text" id="jrnGrind" placeholder="e.g. 14 clicks (Timemore C2)">
                         </div>
                     </div>
 
@@ -426,6 +439,39 @@
             });
         });
 
+        // Dose stepper chips
+        const doseChips = modal.querySelectorAll(".dose-quick-steppers .dose-chip");
+        const doseInput = document.getElementById("jrnDose");
+        const waterInput = document.getElementById("jrnWater");
+
+        doseChips.forEach((chip) => {
+            chip.addEventListener("click", () => {
+                doseChips.forEach((c) => c.classList.remove("active"));
+                chip.classList.add("active");
+                if (doseInput) doseInput.value = chip.dataset.dose;
+                if (waterInput) waterInput.value = chip.dataset.water;
+            });
+        });
+
+        // Equipment switch click helper
+        const gearSelectEl = document.getElementById("jrnGearSelect");
+        const grindInputEl = document.getElementById("jrnGrind");
+        if (gearSelectEl && grindInputEl) {
+            gearSelectEl.addEventListener("change", async () => {
+                const val = gearSelectEl.value;
+                try {
+                    localStorage.setItem("sipwise_last_gear", val);
+                    if (window.SipwiseEquipment) {
+                        const items = await window.SipwiseEquipment.getEquipment();
+                        const match = items.find(i => i.equipmentType === "brewer" && i.name.toLowerCase().includes(val.split("-")[0]));
+                        if (match && match.defaultClicks && !grindInputEl.value) {
+                            grindInputEl.value = match.defaultClicks;
+                        }
+                    }
+                } catch (e) {}
+            });
+        }
+
         // Flavor tags
         tagOpts.forEach((btn) => {
             btn.addEventListener("click", () => {
@@ -470,6 +516,10 @@
             saveBtn.textContent = "Saving to Journal...";
 
             try {
+                // Remember gear and grind for rapid subsequent brews
+                localStorage.setItem("sipwise_last_gear", gearId);
+                if (grindSetting) localStorage.setItem("sipwise_last_grind", grindSetting);
+
                 // Auto-deduct coffee dose from bag if bag is selected
                 if (selectedBagId && window.SipwiseInventory && window.SipwiseInventory.deductFromBag) {
                     await window.SipwiseInventory.deductFromBag(selectedBagId, doseGrams);
@@ -539,6 +589,19 @@
         if (prefill.gearId) {
             const gearSelect = document.getElementById("jrnGearSelect");
             if (gearSelect) gearSelect.value = prefill.gearId;
+        } else {
+            try {
+                const lastGear = localStorage.getItem("sipwise_last_gear");
+                if (lastGear) {
+                    const gearSelect = document.getElementById("jrnGearSelect");
+                    if (gearSelect) gearSelect.value = lastGear;
+                }
+                const lastGrind = localStorage.getItem("sipwise_last_grind");
+                if (lastGrind) {
+                    const grindEl = document.getElementById("jrnGrind");
+                    if (grindEl && !grindEl.value) grindEl.value = lastGrind;
+                }
+            } catch (e) {}
         }
         if (prefill.dose) {
             const doseEl = document.getElementById("jrnDose");
@@ -723,6 +786,18 @@
     document.addEventListener("DOMContentLoaded", () => {
         initSupabase();
         updateJournalBadge();
+
+        if (window.location.hash === "#quicklog") {
+            setTimeout(() => {
+                openLogCupModal();
+            }, 300);
+        }
+    });
+
+    window.addEventListener("hashchange", () => {
+        if (window.location.hash === "#quicklog") {
+            openLogCupModal();
+        }
     });
 
     window.addEventListener("sipwise:auth-changed", () => {

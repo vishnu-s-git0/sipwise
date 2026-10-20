@@ -567,13 +567,19 @@
                                 </div>
                             </div>
                             <div class="user-dropdown-divider"></div>
-                            <button type="button" class="drop-menu-item" id="openShelfFromMenuBtn">
-                                <span>♡ My Saved Shelf</span>
-                                <span class="shelf-count-badge" id="dropdownShelfBadge">0</span>
+                            <a href="beans.html#myBeansInventory" class="drop-menu-item" style="text-decoration:none;">
+                                <span>🫘 My Coffee Bags (Stash)</span>
+                            </a>
+                            <button type="button" class="drop-menu-item" id="openEquipmentFromMenuBtn">
+                                <span>⚙️ Equipment Locker</span>
                             </button>
                             <button type="button" class="drop-menu-item" id="openJournalFromMenuBtn">
                                 <span>📓 My Tasting Journal</span>
                                 <span class="shelf-count-badge" id="dropdownJournalBadge">0</span>
+                            </button>
+                            <button type="button" class="drop-menu-item" id="openShelfFromMenuBtn">
+                                <span>♡ My Saved Shelf</span>
+                                <span class="shelf-count-badge" id="dropdownShelfBadge">0</span>
                             </button>
                             <div class="user-dropdown-divider"></div>
                             <button type="button" class="drop-menu-item sign-out-item" id="authSignOutBtn">
@@ -588,6 +594,16 @@
                 const signOutBtn = container.querySelector("#authSignOutBtn");
                 const shelfBtn = container.querySelector("#openShelfFromMenuBtn");
                 const journalBtn = container.querySelector("#openJournalFromMenuBtn");
+                const equipBtn = container.querySelector("#openEquipmentFromMenuBtn");
+
+                if (equipBtn) {
+                    equipBtn.addEventListener("click", () => {
+                        if (dropdown) dropdown.classList.remove("is-open");
+                        if (window.SipwiseEquipment) {
+                            window.SipwiseEquipment.openEquipmentModal();
+                        }
+                    });
+                }
 
                 if (menuBtn && dropdown) {
                     menuBtn.addEventListener("click", (e) => {

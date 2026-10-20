@@ -1,0 +1,52 @@
+{
+  "name": "Sipwise — Specialty Coffee Journal",
+  "short_name": "Sipwise",
+  "description": "Your personal coffee tasting journal, coffee bags stash inventory, and Indian specialty roaster discovery.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#120c08",
+  "theme_color": "#1f120a",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Log a Brew",
+      "short_name": "Log Brew",
+      "description": "Quickly record today's cup and deduct dose from stash",
+      "url": "beans.html#quicklog",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Beans Inventory",
+      "short_name": "My Beans",
+      "description": "View coffee stash and remaining grams",
+      "url": "beans.html#myBeansInventory",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Brew Guide & Timer",
+      "short_name": "Brew Timer",
+      "description": "Interactive brewing guides with live stopwatch",
+      "url": "brew-guide.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["food", "lifestyle", "utilities"]
+}
