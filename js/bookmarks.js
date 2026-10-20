@@ -167,10 +167,11 @@
             </div>
 
             <div class="shelf-filter-chips" role="tablist">
-                <button type="button" class="shelf-chip active" data-filter="all">All Items (<span id="countAll">0</span>)</button>
+                <button type="button" class="shelf-chip active" data-filter="all">All Saved (<span id="countAll">0</span>)</button>
+                <button type="button" class="shelf-chip" data-filter="journal">📓 Brew Journal (<span id="countJournal">0</span>)</button>
                 <button type="button" class="shelf-chip" data-filter="roaster">Roasters (<span id="countRoaster">0</span>)</button>
                 <button type="button" class="shelf-chip" data-filter="bean">Beans (<span id="countBean">0</span>)</button>
-                <button type="button" class="shelf-chip" data-filter="gear">Brew Gear (<span id="countGear">0</span>)</button>
+                <button type="button" class="shelf-chip" data-filter="gear">Gear (<span id="countGear">0</span>)</button>
             </div>
 
             <div class="shelf-content-body" id="shelfItemsList">
@@ -197,12 +198,12 @@
         });
     }
 
-    function openShelfDrawer() {
+    function openShelfDrawer(initialFilter = "all") {
         const user = window.SipwiseAuth ? window.SipwiseAuth.getCurrentUser() : null;
         if (!user) {
             if (window.SipwiseAuth) {
                 window.SipwiseAuth.openAuthModal("signin", () => {
-                    openShelfDrawer();
+                    openShelfDrawer(initialFilter);
                 });
             }
             return;
@@ -218,7 +219,13 @@
         drawer.setAttribute("aria-hidden", "false");
         document.body.style.overflow = "hidden";
 
-        renderShelfItems("all");
+        // Select matching chip
+        const chips = drawer.querySelectorAll(".shelf-filter-chips .shelf-chip");
+        chips.forEach((c) => {
+            c.classList.toggle("active", c.dataset.filter === initialFilter);
+        });
+
+        renderShelfItems(initialFilter);
     }
 
     function closeShelfDrawer() {
@@ -236,6 +243,15 @@
     async function renderShelfItems(activeFilter = "all") {
         const listContainer = document.getElementById("shelfItemsList");
         if (!listContainer) return;
+
+        // If journal tab is selected, render the journal view
+        if (activeFilter === "journal") {
+            if (window.SipwiseJournal) {
+                window.SipwiseJournal.renderJournalView(listContainer);
+                window.SipwiseJournal.updateBadge();
+            }
+            return;
+        }
 
         const items = await getSavedItems();
 
@@ -336,6 +352,10 @@
         if (drawer && drawer.classList.contains("is-open")) {
             const activeChip = document.querySelector(".shelf-filter-chips .shelf-chip.active");
             renderShelfItems(activeChip ? activeChip.dataset.filter : "all");
+        }
+
+        if (window.SipwiseJournal && window.SipwiseJournal.updateBadge) {
+            window.SipwiseJournal.updateBadge();
         }
     }
 

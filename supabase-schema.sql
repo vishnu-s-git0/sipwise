@@ -83,6 +83,26 @@ create table if not exists public.blog_posts (
 );
 
 
+-- 5. Personal Tasting Journal & Cup Logger
+create table if not exists public.brew_journal (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+  bean_name text not null,
+  roaster_name text,
+  gear_id text not null,
+  gear_name text not null,
+  dose_grams numeric(4,1) not null,
+  water_grams numeric(5,1) not null,
+  brew_time_seconds integer not null,
+  grind_setting text,
+  rating smallint not null check (rating >= 1 and rating <= 5),
+  tasting_notes text,
+  flavor_tags text[],
+  extraction_result text default 'Sweet & Balanced',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+
 -- ==============================================================================
 -- Row-Level Security (RLS) Policies
 -- ==============================================================================
@@ -91,6 +111,7 @@ alter table public.profiles enable row level security;
 alter table public.saved_items enable row level security;
 alter table public.reviews enable row level security;
 alter table public.blog_posts enable row level security;
+alter table public.brew_journal enable row level security;
 
 -- Profiles Policies
 create policy "Public profiles are viewable by everyone" 
@@ -125,3 +146,16 @@ create policy "Users can delete own reviews"
 -- Blog Posts Policies (Public read, admin write)
 create policy "Blog posts are viewable by everyone" 
   on public.blog_posts for select using (true);
+
+-- Brew Journal Policies (Strictly private per user)
+create policy "Users can view own brew journal" 
+  on public.brew_journal for select using (auth.uid() = user_id);
+
+create policy "Users can insert into own brew journal" 
+  on public.brew_journal for insert with check (auth.uid() = user_id);
+
+create policy "Users can update own brew journal entries" 
+  on public.brew_journal for update using (auth.uid() = user_id);
+
+create policy "Users can delete own brew journal entries" 
+  on public.brew_journal for delete using (auth.uid() = user_id);

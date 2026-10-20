@@ -456,6 +456,23 @@
     if (startTimerBtn) startTimerBtn.addEventListener("click", startTimer);
     if (resetTimerBtn) resetTimerBtn.addEventListener("click", resetTimer);
 
+    // Log Cup to Journal
+    const logCupBtn = document.getElementById("logThisCupBtn");
+    if (logCupBtn) {
+        logCupBtn.addEventListener("click", () => {
+            if (window.SipwiseJournal) {
+                const profile = gearProfiles[currentGearKey];
+                window.SipwiseJournal.openLogCupModal({
+                    gearId: currentGearKey,
+                    gearName: profile ? profile.name : currentGearKey,
+                    dose: currentDose,
+                    water: Math.round(currentDose * (profile ? profile.ratio : 15)),
+                    seconds: timerSeconds || (profile ? profile.totalTime : 180)
+                });
+            }
+        });
+    }
+
     // Initial setup on load
     updateCalculations();
 

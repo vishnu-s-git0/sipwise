@@ -571,6 +571,10 @@
                                 <span>♡ My Saved Shelf</span>
                                 <span class="shelf-count-badge" id="dropdownShelfBadge">0</span>
                             </button>
+                            <button type="button" class="drop-menu-item" id="openJournalFromMenuBtn">
+                                <span>📓 My Tasting Journal</span>
+                                <span class="shelf-count-badge" id="dropdownJournalBadge">0</span>
+                            </button>
                             <div class="user-dropdown-divider"></div>
                             <button type="button" class="drop-menu-item sign-out-item" id="authSignOutBtn">
                                 <span>🚪 Sign Out</span>
@@ -583,6 +587,7 @@
                 const dropdown = container.querySelector("#userDropdownMenu");
                 const signOutBtn = container.querySelector("#authSignOutBtn");
                 const shelfBtn = container.querySelector("#openShelfFromMenuBtn");
+                const journalBtn = container.querySelector("#openJournalFromMenuBtn");
 
                 if (menuBtn && dropdown) {
                     menuBtn.addEventListener("click", (e) => {
@@ -607,7 +612,15 @@
                 if (shelfBtn) {
                     shelfBtn.addEventListener("click", () => {
                         if (window.SipwiseBookmarks && window.SipwiseBookmarks.openShelfDrawer) {
-                            window.SipwiseBookmarks.openShelfDrawer();
+                            window.SipwiseBookmarks.openShelfDrawer("all");
+                        }
+                    });
+                }
+
+                if (journalBtn) {
+                    journalBtn.addEventListener("click", () => {
+                        if (window.SipwiseBookmarks && window.SipwiseBookmarks.openShelfDrawer) {
+                            window.SipwiseBookmarks.openShelfDrawer("journal");
                         }
                     });
                 }
