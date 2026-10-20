@@ -228,11 +228,35 @@
     }
 
     /**
+     * Delete an existing review by ID
+     */
+    async function deleteReview(reviewId) {
+        const user = window.SipwiseAuth ? window.SipwiseAuth.getCurrentUser() : null;
+        if (!user) {
+            throw new Error("You must be signed in to delete a review.");
+        }
+
+        if (supabaseClient) {
+            const { error } = await supabaseClient
+                .from("reviews")
+                .delete()
+                .eq("id", reviewId);
+            if (error) throw error;
+        }
+
+        let all = getLocalReviews();
+        all = all.filter((r) => r.id !== reviewId);
+        saveLocalReviews(all);
+        return true;
+    }
+
+    /**
      * Render the complete review section HTML inside any container
      */
     async function renderReviewSection(container, targetType, targetId, targetName) {
         if (!container) return;
 
+        const currentUser = window.SipwiseAuth ? window.SipwiseAuth.getCurrentUser() : null;
         const { rounded, count } = await getAverageRating(targetType, targetId);
         const reviews = await getReviews(targetType, targetId);
 
@@ -339,9 +363,10 @@
                                       year: "numeric"
                                   });
                                   const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+                                  const isOwner = currentUser && (currentUser.id === r.userId || currentUser.email === r.userId);
 
                                   return `
-                            <article class="single-review-card">
+                            <article class="single-review-card" data-review-id="${r.id}">
                                 <div class="review-card-top">
                                     <div class="reviewer-info">
                                         <div class="reviewer-avatar">${initials}</div>
@@ -357,6 +382,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                    ${
+                                        isOwner
+                                            ? `<button type="button" class="delete-review-btn" data-id="${r.id}" title="Delete your review">🗑 Delete</button>`
+                                            : ""
+                                    }
                                 </div>
                                 <h5 class="review-headline">${r.title}</h5>
                                 <p class="review-body-text">${r.comment}</p>
@@ -387,6 +417,28 @@
         const starPickers = container.querySelectorAll(".star-pick");
         const ratingInput = container.querySelector("#reviewRatingInput");
         const tagOpts = container.querySelectorAll(".tag-opt");
+
+        // Bind delete buttons for reviews authored by the current user
+        container.querySelectorAll(".delete-review-btn").forEach((delBtn) => {
+            delBtn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                const reviewId = delBtn.dataset.id;
+                if (!confirm("Are you sure you want to delete this review?")) {
+                    return;
+                }
+                delBtn.disabled = true;
+                delBtn.textContent = "Deleting...";
+
+                try {
+                    await deleteReview(reviewId);
+                    await renderReviewSection(container, targetType, targetId, targetName);
+                } catch (err) {
+                    alert(err.message || "Failed to delete review.");
+                    delBtn.disabled = false;
+                    delBtn.textContent = "🗑 Delete";
+                }
+            });
+        });
 
         // Open Form with Auth Guard
         openBtn.addEventListener("click", () => {
@@ -470,6 +522,7 @@
         getReviews,
         getAverageRating,
         addReview,
+        deleteReview,
         renderReviewSection
     };
 
