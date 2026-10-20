@@ -11,7 +11,8 @@
         content="Discover and master the best coffee brewing equipment: South Indian Filter, V60 Pour-Over, AeroPress, French Press, and Moka Pot with interactive step-by-step recipes."
     >
 
-    <link rel="stylesheet" href="css/style.css?v=14">
+    <link rel="stylesheet" href="css/style.css?v=15">
+    <script src="js/calculator.js?v=15" defer></script>
 </head>
 
 <body>
@@ -44,6 +45,7 @@
             <!-- Quick Jump Bar & Global Expand Toggle -->
             <div class="guide-controls-row">
                 <div class="gear-jump-bar" role="navigation" aria-label="Quick jump to brewing gear">
+                    <a href="#calculator" class="jump-chip jump-chip-calc">⏱ Brew Calculator & Timer</a>
                     <a href="#south-indian-filter" class="jump-chip">🇮🇳 South Indian Filter</a>
                     <a href="#v60" class="jump-chip">☕ V60 Pour-Over</a>
                     <a href="#aeropress" class="jump-chip">💨 AeroPress</a>
@@ -56,6 +58,108 @@
                     <button type="button" id="toggleAllBtn" class="toggle-all-btn">
                         Expand All Recipes
                     </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Interactive Brew Calculator & Live Timer -->
+        <section class="brew-calculator-section" id="calculator">
+            <div class="calculator-container">
+                <div class="calculator-header">
+                    <div>
+                        <span class="calc-label">PRECISION BREWING SUITE</span>
+                        <h2>Brew Ratio & Live Pour Assistant</h2>
+                        <p class="calculator-subtitle">
+                            Dial in your dose, get water weights and ratios automatically, then start the interactive stopwatch with timed cues and audio guidance for every extraction phase.
+                        </p>
+                    </div>
+                    <span class="calculator-badge">Live Interactive Mode</span>
+                </div>
+
+                <div class="calculator-layout">
+                    <!-- Left: Ratio & Dose Controls -->
+                    <div class="calc-controls-col">
+                        <!-- Gear Selection -->
+                        <div class="calc-group">
+                            <div class="calc-label-row">
+                                <label class="calc-label">1. Choose Brewing Method</label>
+                            </div>
+                            <div class="gear-select-buttons" id="timerGearSelect" role="group" aria-label="Select brewing method">
+                                <button type="button" class="gear-btn active" data-gear="v60">☕ V60 Pour-Over</button>
+                                <button type="button" class="gear-btn" data-gear="south-indian-filter">🇮🇳 South Indian Filter</button>
+                                <button type="button" class="gear-btn" data-gear="aeropress">💨 AeroPress</button>
+                                <button type="button" class="gear-btn" data-gear="french-press">🫖 French Press</button>
+                                <button type="button" class="gear-btn" data-gear="moka-pot">🔥 Moka Pot</button>
+                                <button type="button" class="gear-btn" data-gear="cold-brew">🧊 Cold Brew</button>
+                            </div>
+                        </div>
+
+                        <!-- Coffee Dose Stepper & Slider -->
+                        <div class="calc-group">
+                            <div class="calc-label-row">
+                                <label for="coffeeDoseInput" class="calc-label">2. Coffee Dose</label>
+                                <span class="calc-val-pill" id="doseDisplay">15g</span>
+                            </div>
+                            <div class="dose-stepper-wrap">
+                                <button type="button" class="step-btn" id="doseMinusBtn" aria-label="Decrease dose">−</button>
+                                <input type="range" id="coffeeDoseInput" min="10" max="60" step="1" value="15" aria-label="Coffee dose slider">
+                                <button type="button" class="step-btn" id="dosePlusBtn" aria-label="Increase dose">+</button>
+                            </div>
+                            <div class="dose-quick-presets" role="group" aria-label="Quick dose presets">
+                                <button type="button" class="preset-btn active" data-dose="15">1 Cup (15g)</button>
+                                <button type="button" class="preset-btn" data-dose="30">2 Cups (30g)</button>
+                                <button type="button" class="preset-btn" data-dose="45">3 Cups (45g)</button>
+                            </div>
+                        </div>
+
+                        <!-- Calculated Stats Strip -->
+                        <div class="calc-stats-grid">
+                            <div class="calc-stat-box">
+                                <span class="stat-lbl">TOTAL WATER</span>
+                                <span class="stat-num" id="waterWeightDisplay">225g</span>
+                            </div>
+                            <div class="calc-stat-box">
+                                <span class="stat-lbl">BREW RATIO</span>
+                                <span class="stat-num" id="ratioDisplay">1:15</span>
+                            </div>
+                            <div class="calc-stat-box">
+                                <span class="stat-lbl">WATER TEMP</span>
+                                <span class="stat-num" id="tempDisplay">92°C – 94°C</span>
+                            </div>
+                            <div class="calc-stat-box">
+                                <span class="stat-lbl">GRIND SIZE</span>
+                                <span class="stat-num" id="grindDisplay">Medium-Fine</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Timer Card -->
+                    <div class="calc-timer-col">
+                        <div class="timer-card">
+                            <div class="timer-top-bar">
+                                <span class="timer-phase-badge" id="timerPhaseBadge">READY TO BREW</span>
+                                <button type="button" class="sound-toggle-btn" id="soundToggleBtn" title="Sound alerts enabled">🔔 Sound ON</button>
+                            </div>
+
+                            <div class="timer-clock-display" id="timerClock">00:00</div>
+
+                            <div class="timer-progress-track">
+                                <div class="timer-progress-fill" id="timerProgressFill"></div>
+                            </div>
+
+                            <div class="timer-cue-box">
+                                <h4 id="cueTitle">Hario V60 Pour-Over Ready</h4>
+                                <p id="cueDesc">Dose 15g coffee and heat water to 92°C – 94°C. Press Start Brew when pouring.</p>
+                                <span class="cue-weight-callout" id="cueWeightCallout">First target: 45g</span>
+                            </div>
+
+                            <div class="timer-controls">
+                                <button type="button" class="nav-button timer-btn-primary" id="startTimerBtn">Start Brew ▶</button>
+                                <button type="button" class="timer-btn-secondary" id="resetTimerBtn">Reset ↺</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -163,6 +267,11 @@
                             <a href="beans.html#monsooned-malabar" class="text-link">Monsooned Malabar AA ↗</a>
                         </div>
                     </div>
+
+                    <div class="launch-timer-link">
+                        <span style="font-size: 12px; color: var(--muted);">Ready to brew South Indian Filter?</span>
+                        <button type="button" class="launch-timer-btn" onclick="selectBrewEquipment('south-indian-filter')">Launch Live Timer ⏱</button>
+                    </div>
                 </div>
             </article>
 
@@ -263,6 +372,11 @@
                             <a href="beans.html#kelagur-washed" class="text-link">KC Roasters (Kelagur Washed) ↗</a>, 
                             <a href="beans.html#ratnagiri-carbonic" class="text-link">Bloom Coffee (Ratnagiri Carbonic) ↗</a>
                         </div>
+                    </div>
+
+                    <div class="launch-timer-link">
+                        <span style="font-size: 12px; color: var(--muted);">Ready to brew V60 Pour-Over?</span>
+                        <button type="button" class="launch-timer-btn" onclick="selectBrewEquipment('v60')">Launch Live Timer ⏱</button>
                     </div>
                 </div>
             </article>
@@ -365,6 +479,11 @@
                             <a href="beans.html#baarbara-berry" class="text-link">Third Wave (Baarbara Berry) ↗</a>
                         </div>
                     </div>
+
+                    <div class="launch-timer-link">
+                        <span style="font-size: 12px; color: var(--muted);">Ready to brew AeroPress?</span>
+                        <button type="button" class="launch-timer-btn" onclick="selectBrewEquipment('aeropress')">Launch Live Timer ⏱</button>
+                    </div>
                 </div>
             </article>
 
@@ -465,6 +584,11 @@
                             <a href="beans.html#baarbara-berry" class="text-link">Third Wave (Baarbara Berry) ↗</a>, 
                             <a href="beans.html#monsooned-malabar" class="text-link">Monsooned Malabar AA ↗</a>
                         </div>
+                    </div>
+
+                    <div class="launch-timer-link">
+                        <span style="font-size: 12px; color: var(--muted);">Ready to brew French Press?</span>
+                        <button type="button" class="launch-timer-btn" onclick="selectBrewEquipment('french-press')">Launch Live Timer ⏱</button>
                     </div>
                 </div>
             </article>
@@ -567,6 +691,11 @@
                             <a href="beans.html#attikan-estate" class="text-link">Blue Tokai (Attikan Dark) ↗</a>
                         </div>
                     </div>
+
+                    <div class="launch-timer-link">
+                        <span style="font-size: 12px; color: var(--muted);">Ready to brew Moka Pot?</span>
+                        <button type="button" class="launch-timer-btn" onclick="selectBrewEquipment('moka-pot')">Launch Live Timer ⏱</button>
+                    </div>
                 </div>
             </article>
 
@@ -666,6 +795,11 @@
                             <a href="beans.html#parama-cold-smoke" class="text-link">Maverick & Farmer (Parama Cold-Smoked) ↗</a>, 
                             <a href="beans.html#project-sankalp" class="text-link">Subko (Project Sankalp) ↗</a>
                         </div>
+                    </div>
+
+                    <div class="launch-timer-link">
+                        <span style="font-size: 12px; color: var(--muted);">Ready to brew Cold Brew?</span>
+                        <button type="button" class="launch-timer-btn" onclick="selectBrewEquipment('cold-brew')">Launch Live Timer ⏱</button>
                     </div>
                 </div>
             </article>
