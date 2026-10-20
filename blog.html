@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sipwise — Specialty Coffee Stories, Terroir & Brew Science</title>
+
+    <meta
+        name="description"
+        content="Read in-depth editorial stories on Indian specialty coffee, shade-grown terroir, anaerobic fermentation science, and barista brew guides."
+    >
+
+    <link rel="stylesheet" href="css/style.css?v=16">
+    <script src="js/config.js?v=16" defer></script>
+    <script src="js/auth.js?v=16" defer></script>
+    <script src="js/bookmarks.js?v=16" defer></script>
+    <script src="js/reviews.js?v=16" defer></script>
+    <script src="js/blog.js?v=16" defer></script>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <a href="index.html" class="logo">sipwise<span>.</span></a>
+
+        <nav class="nav-links">
+            <a href="index.html#roasters">Roasters</a>
+            <a href="brew-guide.html">Brew Guide</a>
+            <a href="beans.html">Beans</a>
+            <a href="blog.html" class="active-nav">Blog</a>
+            <a href="index.html#about">Our Story</a>
+        </nav>
+
+        <div class="nav-actions">
+            <button type="button" class="nav-shelf-btn" onclick="SipwiseBookmarks.openShelfDrawer()" title="View saved items">
+                ♡ Saved Shelf
+            </button>
+            <div class="nav-auth-container"></div>
+            <a href="index.html#coffee" class="nav-button">Explore roasters ↗</a>
+        </div>
+    </header>
+
+
+    <main>
+
+        <!-- Blog Hero -->
+        <section class="blog-hero">
+            <p class="eyebrow">EDITORIAL & PERSPECTIVES</p>
+            <h1>Origin Stories.<br><span>Fermentation & Brew Craft.</span></h1>
+            <p class="blog-hero-desc">
+                From high-altitude canopy farming in the Western Ghats to microbiological yeast trials and home barista extraction science. Curated essays and guides from the Indian specialty frontier.
+            </p>
+
+            <!-- Category Filter Bar -->
+            <div class="blog-filter-bar">
+                <span class="filter-lead-label">Filter Topics:</span>
+                <div class="blog-filter-chips" role="tablist">
+                    <button type="button" class="blog-filter-btn active" data-category="All">All Stories</button>
+                    <button type="button" class="blog-filter-btn" data-category="Processing & Science">Processing & Science</button>
+                    <button type="button" class="blog-filter-btn" data-category="Estate Stories">Estate Stories</button>
+                    <button type="button" class="blog-filter-btn" data-category="Brewing Rituals">Brewing Rituals</button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Blog Posts Grid -->
+        <section class="blog-grid-section">
+            <div class="blog-grid" id="blogPostsGrid">
+                <!-- Dynamically rendered by js/blog.js -->
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <a href="index.html" class="logo">sipwise<span>.</span></a>
+
+        <div class="footer-links">
+            <a href="index.html#roasters">Roasters</a>
+            <a href="brew-guide.html">Brew Guide</a>
+            <a href="beans.html">Beans</a>
+            <a href="blog.html">Blog</a>
+            <a href="index.html#about">About</a>
+        </div>
+
+        <p class="footer-copy">© 2026 Sipwise. Cultivated for the Indian specialty coffee community.</p>
+    </footer>
+
+</body>
+</html>

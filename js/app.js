@@ -262,7 +262,12 @@ function createRoasterCardHTML(roaster) {
     return `
         <article class="roaster-card" data-id="${roaster.id}" tabindex="0" role="button" aria-label="View details for ${roaster.name}">
             <div class="roaster-card-content">
-                <span class="roaster-card-location">${roaster.location}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span class="roaster-card-location">${roaster.location}</span>
+                    <button type="button" class="btn-bookmark" data-type="roaster" data-id="${roaster.id}" data-title="${roaster.name}" data-subtitle="${roaster.location}" title="Save roaster">
+                        <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+                    </button>
+                </div>
                 <h3 class="roaster-card-title">${roaster.name}</h3>
                 <p class="roaster-card-description">${roaster.description}</p>
                 <div class="roaster-card-footer">
@@ -306,6 +311,11 @@ function renderRoasters(list) {
 
     // Attach card click handlers for the slide-over drawer
     attachCardListeners();
+
+    // Bind card bookmark buttons
+    if (window.SipwiseBookmarks) {
+        window.SipwiseBookmarks.bindButtons();
+    }
 }
 
 /**
@@ -357,9 +367,14 @@ function openDrawer(roasterId) {
         : "";
 
     drawerContent.innerHTML = `
-        <div class="drawer-header">
-            <span class="roaster-card-location">${roaster.location}</span>
-            <h2 class="drawer-title" id="drawerTitle">${roaster.name}</h2>
+        <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+            <div>
+                <span class="roaster-card-location">${roaster.location}</span>
+                <h2 class="drawer-title" id="drawerTitle">${roaster.name}</h2>
+            </div>
+            <button type="button" class="btn-bookmark" data-type="roaster" data-id="${roaster.id}" data-title="${roaster.name}" data-subtitle="${roaster.location}" title="Save to shelf">
+                <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+            </button>
         </div>
 
         <div class="drawer-image">
@@ -406,7 +421,21 @@ function openDrawer(roasterId) {
         <a href="${roaster.website}" target="_blank" rel="noopener noreferrer" class="drawer-cta-btn">
             Shop beans on official website ↗
         </a>
+
+        <!-- Community Reviews & Ratings -->
+        <div class="drawer-reviews-container" id="roasterReviewsWrap"></div>
     `;
+
+    // Render community reviews for this roaster
+    if (window.SipwiseReviews) {
+        const revWrap = drawerContent.querySelector("#roasterReviewsWrap");
+        window.SipwiseReviews.renderReviewSection(revWrap, "roaster", roaster.id, roaster.name);
+    }
+
+    // Bind bookmark buttons inside the drawer
+    if (window.SipwiseBookmarks) {
+        window.SipwiseBookmarks.bindButtons();
+    }
 
     // Open overlay and lock body scroll
     drawerOverlay.classList.add("active");

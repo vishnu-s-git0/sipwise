@@ -11,8 +11,12 @@
         content="Discover and master the best coffee brewing equipment: South Indian Filter, V60 Pour-Over, AeroPress, French Press, and Moka Pot with interactive step-by-step recipes."
     >
 
-    <link rel="stylesheet" href="css/style.css?v=15">
-    <script src="js/calculator.js?v=15" defer></script>
+    <link rel="stylesheet" href="css/style.css?v=16">
+    <script src="js/config.js?v=16" defer></script>
+    <script src="js/auth.js?v=16" defer></script>
+    <script src="js/bookmarks.js?v=16" defer></script>
+    <script src="js/reviews.js?v=16" defer></script>
+    <script src="js/calculator.js?v=16" defer></script>
 </head>
 
 <body>
@@ -25,10 +29,17 @@
             <a href="index.html#roasters">Roasters</a>
             <a href="brew-guide.html" class="active-nav">Brew Guide</a>
             <a href="beans.html">Beans</a>
+            <a href="blog.html">Blog</a>
             <a href="index.html#about">Our Story</a>
         </nav>
 
-        <a href="index.html#coffee" class="nav-button">Explore roasters ↗</a>
+        <div class="nav-actions">
+            <button type="button" class="nav-shelf-btn" onclick="SipwiseBookmarks.openShelfDrawer()" title="View saved items">
+                ♡ Saved Shelf
+            </button>
+            <div class="nav-auth-container"></div>
+            <a href="index.html#coffee" class="nav-button">Explore roasters ↗</a>
+        </div>
     </header>
 
 
@@ -175,7 +186,12 @@
                         <span class="gear-category">TRADITIONAL DRIP PERCOLATION</span>
                         <h2>South Indian Filter</h2>
                     </div>
-                    <span class="gear-badge">Iconic Indian Ritual</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button type="button" class="btn-bookmark" data-type="gear" data-id="south-indian-filter" data-title="South Indian Filter" data-subtitle="Traditional Drip Brewer">
+                            <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+                        </button>
+                        <span class="gear-badge">Iconic Indian Ritual</span>
+                    </div>
                 </div>
 
                 <div class="gear-card-summary">
@@ -283,7 +299,12 @@
                         <span class="gear-category">MANUAL POUR-OVER PERCOLATION</span>
                         <h2>Hario V60 Pour-Over</h2>
                     </div>
-                    <span class="gear-badge">Barista Choice</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button type="button" class="btn-bookmark" data-type="gear" data-id="v60" data-title="Hario V60 Pour-Over" data-subtitle="Manual Pour-Over">
+                            <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+                        </button>
+                        <span class="gear-badge">Barista Choice</span>
+                    </div>
                 </div>
 
                 <div class="gear-card-summary">
@@ -389,7 +410,12 @@
                         <span class="gear-category">HYBRID IMMERSION & PRESSURE</span>
                         <h2>AeroPress Brewer</h2>
                     </div>
-                    <span class="gear-badge">Versatile & Travel</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button type="button" class="btn-bookmark" data-type="gear" data-id="aeropress" data-title="AeroPress Brewer" data-subtitle="Hybrid Immersion">
+                            <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+                        </button>
+                        <span class="gear-badge">Versatile & Travel</span>
+                    </div>
                 </div>
 
                 <div class="gear-card-summary">
@@ -495,7 +521,12 @@
                         <span class="gear-category">FULL IMMERSION BREWING</span>
                         <h2>French Press (Plunger)</h2>
                     </div>
-                    <span class="gear-badge">Heavy Body</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button type="button" class="btn-bookmark" data-type="gear" data-id="french-press" data-title="French Press" data-subtitle="Full Immersion">
+                            <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+                        </button>
+                        <span class="gear-badge">Heavy Body</span>
+                    </div>
                 </div>
 
                 <div class="gear-card-summary">
@@ -601,7 +632,12 @@
                         <span class="gear-category">STOVETOP STEAM PRESSURE</span>
                         <h2>Moka Pot (Stovetop)</h2>
                     </div>
-                    <span class="gear-badge">Bold & Espresso-Style</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button type="button" class="btn-bookmark" data-type="gear" data-id="moka-pot" data-title="Moka Pot" data-subtitle="Stovetop Steam Pressure">
+                            <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+                        </button>
+                        <span class="gear-badge">Bold & Espresso-Style</span>
+                    </div>
                 </div>
 
                 <div class="gear-card-summary">
@@ -707,7 +743,12 @@
                         <span class="gear-category">SLOW CHILLED EXTRACTION</span>
                         <h2>Cold Brew Dripper / Steeper</h2>
                     </div>
-                    <span class="gear-badge">Smooth & Low-Acid</span>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button type="button" class="btn-bookmark" data-type="gear" data-id="cold-brew" data-title="Cold Brew Dripper" data-subtitle="Chilled Immersion">
+                            <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+                        </button>
+                        <span class="gear-badge">Smooth & Low-Acid</span>
+                    </div>
                 </div>
 
                 <div class="gear-card-summary">

@@ -11,7 +11,11 @@
         content="Explore curated Indian specialty coffee beans, single estate harvests, and use our interactive Taste Matcher to find the perfect bean for your brew method."
     >
 
-    <link rel="stylesheet" href="css/style.css?v=15">
+    <link rel="stylesheet" href="css/style.css?v=16">
+    <script src="js/config.js?v=16" defer></script>
+    <script src="js/auth.js?v=16" defer></script>
+    <script src="js/bookmarks.js?v=16" defer></script>
+    <script src="js/reviews.js?v=16" defer></script>
 </head>
 
 <body>
@@ -24,10 +28,17 @@
             <a href="index.html#roasters">Roasters</a>
             <a href="brew-guide.html">Brew Guide</a>
             <a href="beans.html" class="active-nav">Beans</a>
+            <a href="blog.html">Blog</a>
             <a href="index.html#about">Our Story</a>
         </nav>
 
-        <a href="index.html#coffee" class="nav-button">Explore roasters ↗</a>
+        <div class="nav-actions">
+            <button type="button" class="nav-shelf-btn" onclick="SipwiseBookmarks.openShelfDrawer()" title="View saved items">
+                ♡ Saved Shelf
+            </button>
+            <div class="nav-auth-container"></div>
+            <a href="index.html#coffee" class="nav-button">Explore roasters ↗</a>
+        </div>
     </header>
 
 

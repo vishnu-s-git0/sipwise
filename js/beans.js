@@ -210,9 +210,14 @@ function createBeanCardHTML(bean) {
     return `
         <article class="bean-card" id="${bean.id}">
             <div class="bean-card-content">
-                <div class="bean-card-meta">
-                    <span class="bean-estate-tag">🌱 ${bean.estate}</span>
-                    <span class="roast-badge roast-${roastClass}">${bean.roast} Roast</span>
+                <div class="bean-card-meta" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="bean-estate-tag">🌱 ${bean.estate}</span>
+                        <span class="roast-badge roast-${roastClass}">${bean.roast} Roast</span>
+                    </div>
+                    <button type="button" class="btn-bookmark" data-type="bean" data-id="${bean.id}" data-title="${bean.name}" data-subtitle="${bean.estate} • ${bean.roaster}" title="Save bean">
+                        <span class="heart-icon">♡</span> <span class="btn-label">Save</span>
+                    </button>
                 </div>
 
                 <h3 class="bean-card-title">${bean.name}</h3>
@@ -247,10 +252,18 @@ function createBeanCardHTML(bean) {
 
                 <div class="bean-card-footer">
                     <span class="bean-milk-tag">${bean.milkFriendly ? "☕ Great with or without milk" : "✨ Best enjoyed black"}</span>
-                    <a href="${bean.shopUrl}" target="_blank" rel="noopener noreferrer" class="bean-shop-btn">
-                        Shop bean at roaster ↗
-                    </a>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button type="button" class="toggle-bean-reviews-btn" data-id="${bean.id}" data-name="${bean.name}">
+                            ★ Community Reviews
+                        </button>
+                        <a href="${bean.shopUrl}" target="_blank" rel="noopener noreferrer" class="bean-shop-btn">
+                            Shop bean ↗
+                        </a>
+                    </div>
                 </div>
+
+                <!-- Community Reviews Expansion Container -->
+                <div class="bean-reviews-container" id="beanReviews-${bean.id}" style="display: none;"></div>
             </div>
 
             <div class="bean-card-visual">
@@ -275,6 +288,34 @@ function renderBeans(list) {
     noBeanResults.classList.add("hidden");
     beansGrid.innerHTML = list.map(createBeanCardHTML).join("");
     beanCount.textContent = `Showing ${list.length} of ${beans.length} specialty beans`;
+
+    // Bind bookmarks
+    if (window.SipwiseBookmarks) {
+        window.SipwiseBookmarks.bindButtons();
+    }
+
+    // Attach review toggle listeners
+    beansGrid.querySelectorAll(".toggle-bean-reviews-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const beanId = btn.dataset.id;
+            const beanName = btn.dataset.name;
+            const container = document.getElementById(`beanReviews-${beanId}`);
+            if (!container) return;
+
+            const isShown = container.style.display === "block";
+            if (isShown) {
+                container.style.display = "none";
+                btn.textContent = "★ Community Reviews";
+            } else {
+                container.style.display = "block";
+                btn.textContent = "▲ Hide Reviews";
+                if (window.SipwiseReviews) {
+                    window.SipwiseReviews.renderReviewSection(container, "bean", beanId, beanName);
+                }
+            }
+        });
+    });
 }
 
 /**

@@ -11,23 +11,34 @@
         content="Discover exceptional Indian coffee roasters, specialty beans, and your next favourite cup."
     >
 
-    <link rel="stylesheet" href="css/style.css?v=15">
+    <link rel="stylesheet" href="css/style.css?v=16">
+    <script src="js/config.js?v=16" defer></script>
+    <script src="js/auth.js?v=16" defer></script>
+    <script src="js/bookmarks.js?v=16" defer></script>
+    <script src="js/reviews.js?v=16" defer></script>
 </head>
 
 <body>
 
     <!-- Navigation -->
     <header class="navbar">
-        <a href="#" class="logo">sipwise<span>.</span></a>
+        <a href="index.html" class="logo">sipwise<span>.</span></a>
 
         <nav class="nav-links">
             <a href="#roasters">Roasters</a>
             <a href="brew-guide.html">Brew Guide</a>
             <a href="beans.html">Beans</a>
+            <a href="blog.html">Blog</a>
             <a href="#about">Our Story</a>
         </nav>
 
-        <a href="#coffee" class="nav-button">Explore coffee ↗</a>
+        <div class="nav-actions">
+            <button type="button" class="nav-shelf-btn" onclick="SipwiseBookmarks.openShelfDrawer()" title="View saved items">
+                ♡ Saved Shelf
+            </button>
+            <div class="nav-auth-container"></div>
+            <a href="#coffee" class="nav-button">Explore coffee ↗</a>
+        </div>
     </header>
 
 
